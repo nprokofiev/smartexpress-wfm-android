@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:tools="http://schemas.android.com/tools"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:orientation="vertical"
+              tools:context=".LoginActivity" >
+
+    <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal" >
+
+
+        <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical" >
+
+            <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal" >
+
+                <EditText
+                        android:id="@+id/userPhoneLoginForm"
+                        android:layout_width="385dp"
+                        android:layout_height="40.5dip"
+                        android:ems="10"
+                        android:hint="@string/phone"
+                        android:inputType="text"
+                        android:textSize="12dip" />
+
+
+            </LinearLayout>
+
+            <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal" >
+
+                <EditText
+                        android:id="@+id/passwordLoginForm"
+                        android:layout_width="385dp"
+                        android:layout_height="40.5dip"
+                        android:hint="@string/password"
+                        android:inputType="textPassword"
+                        android:textSize="12dip" />
+
+
+            </LinearLayout>
+
+
+        </LinearLayout>
+    </LinearLayout>
+
+    <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" >
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal" >
+        <Button
+                android:id="@+id/submitLoginForm"
+                android:layout_width="100dip"
+                android:layout_height="wrap_content"
+            android:text="@string/submit"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true" />
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/registerLoginForm"
+            android:layout_width="200dip"
+            android:layout_height="wrap_content"
+            android:text="@string/register"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentRight="true" />
+    </RelativeLayout>
+
+</LinearLayout>

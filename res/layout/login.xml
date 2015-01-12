@@ -29,7 +29,7 @@
                         android:layout_height="40.5dip"
                         android:ems="10"
                         android:hint="@string/phone"
-                        android:inputType="text"
+                        android:inputType="phone"
                         android:textSize="12dip" />
 
 

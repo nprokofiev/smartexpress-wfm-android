@@ -1,12 +1,13 @@
 package ru.smartexpress.courierapp.activity;
 
+import android.app.ActionBar;
 import android.app.Activity;
+import android.app.ListActivity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
+import android.view.*;
+import android.widget.ProgressBar;
 import ru.smartexpress.courierapp.R;
 import ru.smartexpress.courierapp.service.LocationService;
 
@@ -19,9 +20,10 @@ public class OrderListActivity extends Activity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.main);
+        setContentView(R.layout.order_list);
         Intent intent = new Intent(this, LocationService.class);
         startService(intent);
+   //     createOrderListGrid();
     }
 
     @Override
@@ -44,6 +46,15 @@ public class OrderListActivity extends Activity {
         }
     }
 
+/*    public void createOrderListGrid(){
+        ProgressBar progressBar = new ProgressBar(this);
+        progressBar.setLayoutParams(new ActionBar.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT, Gravity.CENTER));
+        progressBar.setIndeterminate(true);
+        getListView().setEmptyView(progressBar);
+
+        ViewGroup root = (ViewGroup) findViewById(R.id.orderList);
+        root.addView(progressBar);
+    }*/
 
 
     public void logout(){

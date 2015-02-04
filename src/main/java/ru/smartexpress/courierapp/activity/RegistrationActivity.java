@@ -8,6 +8,8 @@ import android.view.View;
 import android.view.Window;
 import android.widget.Button;
 import android.widget.EditText;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.octo.android.robospice.JacksonSpringAndroidSpiceService;
 import com.octo.android.robospice.SpiceManager;
 import com.octo.android.robospice.persistence.exception.SpiceException;
@@ -29,6 +31,7 @@ import java.util.Map;
  * @date 04.01.15 17:29
  */
 public class RegistrationActivity extends Activity implements View.OnClickListener {
+
     private EditText name;
     private EditText phone;
     private EditText password;
@@ -64,9 +67,8 @@ public class RegistrationActivity extends Activity implements View.OnClickListen
         Button register = (Button)findViewById(R.id.registerButton);
         register.setOnClickListener(this);
 
+
     }
-
-
 
     @Override
     public void onClick(View v) {

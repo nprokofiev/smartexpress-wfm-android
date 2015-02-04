@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:orientation="vertical"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:padding="10dp"
+    >
+    <!-- otkuda -->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Откуда везти:"
+        android:id="@+id/sourceAddressLabel"
+
+        android:textStyle="bold"/>
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="adress"
+        android:id="@+id/sourceAddress"
+        />
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Во сколько забрать:"
+        android:paddingTop="10dp"
+        android:id="@+id/pickUpDeadlineLabel"
+
+        android:textStyle="bold"/>
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="15:45"
+        android:id="@+id/pickUpDeadline"
+        />
+    <!-- kuda -->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Куда везти:"
+        android:paddingTop="10dp"
+        android:id="@+id/destinationAddressLabel"
+
+        android:textStyle="bold"/>
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="destination address"
+        android:id="@+id/destinationAddress"
+        />
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Во сколько привезти:"
+        android:paddingTop="10dp"
+        android:id="@+id/deadlineLabel"
+        android:textStyle="bold"/>
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="16:45"
+        android:id="@+id/deadline"
+        />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Я забрал этот заказ"
+        android:id="@+id/changeOrderStatus"
+        android:layout_gravity="center_horizontal"/>
+</LinearLayout>

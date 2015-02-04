@@ -47,13 +47,7 @@ public class JsonSpiceService extends JacksonSpringAndroidSpiceService {
         if(preferences.contains("username")) {
             String username = preferences.getString("username", null);
             String password = preferences.getString("password", null);
-            HttpComponentsClientHttpRequestFactory requestFactory =
-                    (HttpComponentsClientHttpRequestFactory) restTemplate.getRequestFactory();
-            DefaultHttpClient httpClient =
-                    (DefaultHttpClient) requestFactory.getHttpClient();
-            httpClient.getCredentialsProvider().setCredentials(
-                    new AuthScope(CommonConstants.HOST, CommonConstants.PORT, AuthScope.ANY_REALM),
-                    new UsernamePasswordCredentials(username, password));
+            setCredentials(restTemplate, username, password);
         }
         // web services support json responses
         MappingJacksonHttpMessageConverter jsonConverter = new MappingJacksonHttpMessageConverter();
@@ -63,5 +57,15 @@ public class JsonSpiceService extends JacksonSpringAndroidSpiceService {
 
         restTemplate.setMessageConverters( listHttpMessageConverters );
         return restTemplate;
+    }
+
+    public static void setCredentials(RestTemplate restTemplate, String username, String password){
+        HttpComponentsClientHttpRequestFactory requestFactory =
+                (HttpComponentsClientHttpRequestFactory) restTemplate.getRequestFactory();
+        DefaultHttpClient httpClient =
+                (DefaultHttpClient) requestFactory.getHttpClient();
+        httpClient.getCredentialsProvider().setCredentials(
+                new AuthScope(CommonConstants.HOST, CommonConstants.PORT, AuthScope.ANY_REALM),
+                new UsernamePasswordCredentials(username, password));
     }
 }

@@ -42,6 +42,12 @@
             <version>4.1.1.4</version>
             <scope>provided</scope>
         </dependency>
+        <dependency>
+            <groupId>com.android.support</groupId>
+            <artifactId>support-v4</artifactId>
+            <version>18.0.0</version>
+            <scope>compile</scope>
+        </dependency>
         <!--<dependency>
             <groupId>com.google.android.gms</groupId>
             <artifactId>play-services</artifactId>
@@ -76,12 +82,13 @@
                 <version>3.9.0-rc.1</version>
                 <configuration>
                     <sdk>
-                        <platform>20</platform>
+                        <platform>19</platform>
                     </sdk>
                     <!--<deleteConflictingFiles>true</deleteConflictingFiles>-->
                     <undeployBeforeDeploy>true</undeployBeforeDeploy>
                 <emulator>
             <avd>Default_Nexus_5_1</avd>
+                    <!--<avd>a412</avd>-->
             <!-- Wait for emulator starting (3 minutes) -->
             <wait>180000</wait>
         </emulator>

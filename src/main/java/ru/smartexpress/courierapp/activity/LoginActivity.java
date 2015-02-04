@@ -10,7 +10,8 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import com.octo.android.robospice.JacksonSpringAndroidSpiceService;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.octo.android.robospice.SpiceManager;
 import com.octo.android.robospice.persistence.exception.SpiceException;
 import com.octo.android.robospice.request.listener.RequestListener;
@@ -26,14 +27,20 @@ import ru.smartexpress.courierapp.service.JsonSpiceService;
  * @date 20.12.14 9:30
  */
 public class LoginActivity extends Activity {
+    private static final int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
     private EditText phoneEditText;
     private EditText passwordEditText;
     public static final String LOGIN_PREFS = "usersettings";
     protected SpiceManager spiceManager = new SpiceManager(JsonSpiceService.class);
     private static final String TAG = "LoginActivity";
+    private  SharedPreferences preferences;
+
+    public static final Class<? extends Activity> defaultActivity = OrderListActivity.class;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        preferences = getSharedPreferences(LOGIN_PREFS, 0);
         checkAuth();
         setContentView(R.layout.login);
         phoneEditText = (EditText) findViewById(R.id.userPhoneLoginForm);
@@ -57,8 +64,22 @@ public class LoginActivity extends Activity {
 
     }
 
+    private boolean checkPlayServices() {
+        int resultCode = GooglePlayServicesUtil.isGooglePlayServicesAvailable(this);
+        if (resultCode != ConnectionResult.SUCCESS) {
+            if (GooglePlayServicesUtil.isUserRecoverableError(resultCode)) {
+                GooglePlayServicesUtil.getErrorDialog(resultCode, this,
+                        PLAY_SERVICES_RESOLUTION_REQUEST).show();
+            } else {
+                Log.i(TAG, "This device is not supported.");
+                finish();
+            }
+            return false;
+        }
+        return true;
+    }
+
     private void checkAuth(){
-        SharedPreferences preferences = getSharedPreferences(LOGIN_PREFS, 0);
         if(preferences.contains("username")){
             Intent intent = new Intent(LoginActivity.this, OrderListActivity.class);
             startActivity(intent);
@@ -89,7 +110,7 @@ public class LoginActivity extends Activity {
 
     private void onLogin(final String phone, final String password){
         setProgressBarIndeterminateVisibility(true);
-        final LoginRequest loginRequest = new LoginRequest(phone, password);
+        final LoginRequest loginRequest = new LoginRequest(phone, password, preferences, this);
         Log.i(TAG, "executong login");
         spiceManager.execute(loginRequest, new RequestListener<UserDTO>() {
             @Override
@@ -126,7 +147,6 @@ public class LoginActivity extends Activity {
     }
 
     private void doLogin(String username, String password, UserDTO userDTO){
-        SharedPreferences preferences = getSharedPreferences(LOGIN_PREFS, 0);
         SharedPreferences.Editor editor = preferences.edit();
         editor.putString("username", username);
         editor.putString("password", password);

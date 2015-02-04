@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:orientation="vertical"
+              android:layout_width="fill_parent"
+              android:layout_height="fill_parent"
+              android:padding="16dp"
+              android:id="@+id/orderListItem">
+
+    <!-- otkuda -->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Откуда везти:"
+        android:id="@+id/sourceAddressLabelOrderListItem"
+
+        android:textStyle="bold"/>
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="adress"
+        android:id="@+id/sourceAddressOrderListItem"
+        />
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Во сколько забрать:"
+        android:paddingTop="10dp"
+        android:id="@+id/pickUpDeadlineLabelOrderListItem"
+
+        android:textStyle="bold"/>
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="15:45"
+        android:id="@+id/pickUpDeadlineOrderListItem"
+        />
+    <!-- kuda -->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Куда везти:"
+        android:paddingTop="10dp"
+        android:id="@+id/destinationAddressLabelOrderListItem"
+
+        android:textStyle="bold"/>
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="destination address"
+        android:id="@+id/destinationAddressOrderListItem"
+        />
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Во сколько привезти:"
+        android:paddingTop="10dp"
+        android:id="@+id/deadlineLabelOrderListItem"
+        android:textStyle="bold"/>
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="16:45"
+        android:id="@+id/deadlineOrderListItem"
+        />
+    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                    android:orientation="horizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Принять"
+            android:paddingLeft="20dp"
+            android:paddingRight="20dp"
+            android:layout_alignParentLeft="true"
+            android:id="@+id/acceptOrderListItem"/>
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingLeft="20dp"
+            android:paddingRight="20dp"
+            android:text="Отклонить"
+            android:layout_alignParentRight="true"
+            android:id="@+id/rejectOrderListItem"/>
+    </RelativeLayout>
+</LinearLayout>
+

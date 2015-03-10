@@ -1,6 +1,8 @@
 package ru.smartexpress.courierapp.activity;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -11,10 +13,13 @@ import android.widget.TextView;
 import com.octo.android.robospice.SpiceManager;
 import com.octo.android.robospice.persistence.exception.SpiceException;
 import com.octo.android.robospice.request.listener.RequestListener;
+import org.codehaus.jackson.map.util.BeanUtil;
 import ru.smartexpress.common.NotificationField;
+import ru.smartexpress.common.dto.OrderDTO;
 import ru.smartexpress.courierapp.R;
 import ru.smartexpress.courierapp.request.AcceptOrderRequest;
 import ru.smartexpress.courierapp.request.RejectOrderRequest;
+import ru.smartexpress.courierapp.request.SimpleRequestListener;
 import ru.smartexpress.courierapp.service.JsonSpiceService;
 
 import java.io.UnsupportedEncodingException;
@@ -39,14 +44,15 @@ public class NewOrderActivity extends Activity {
     SpiceManager spiceManager = new SpiceManager(JsonSpiceService.class);
     private Long orderId;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.order_list_item);
-        sourceAddress = (TextView)findViewById(R.id.sourceAddressOrderListItem);
-        destinationAddress = (TextView)findViewById(R.id.destinationAddressOrderListItem);
-        pickUpDeadline = (TextView)findViewById(R.id.pickUpDeadlineOrderListItem);
-        deadline = (TextView)findViewById(R.id.deadlineOrderListItem);
+                sourceAddress = (TextView)findViewById(R.id.sourceAddressOrderListItem);
+                destinationAddress = (TextView)findViewById(R.id.destinationAddressOrderListItem);
+                pickUpDeadline = (TextView)findViewById(R.id.pickUpDeadlineOrderListItem);
+                deadline = (TextView)findViewById(R.id.deadlineOrderListItem);
         accept = (Button)findViewById(R.id.acceptOrderListItem);
         accept.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -95,15 +101,14 @@ public class NewOrderActivity extends Activity {
     }
 
     public void fillText(Intent intent){
-
         String destinationAddressI = decode(intent.getStringExtra(NotificationField.DESTINATION_ADDRESS));
         String sourceAddressI = decode(intent.getStringExtra(NotificationField.SOURCE_ADDRESS));
         String pickUpDeadlineI = intent.getStringExtra(NotificationField.PICK_UP_DEADLINE);
         String deadlineI = intent.getStringExtra(NotificationField.DEADLINE);
         sourceAddress.setText(sourceAddressI);
         destinationAddress.setText(destinationAddressI);
-        pickUpDeadline.setText(dateFormat.format(new Date(Long.valueOf(pickUpDeadlineI))));
-        deadline.setText(dateFormat.format(new Date(Long.valueOf(deadlineI))));
+            pickUpDeadline.setText(dateFormat.format(new Date(Long.valueOf(pickUpDeadlineI))));
+            deadline.setText(dateFormat.format(new Date(Long.valueOf(deadlineI))));
 
         orderId = Long.valueOf(getIntent().getStringExtra(NotificationField.ORDER_ID));
 
@@ -125,26 +130,40 @@ public class NewOrderActivity extends Activity {
     }
 
     private void onAccept(){
-       spiceManager.execute(new AcceptOrderRequest(orderId), new RequestListener() {
+        setProgressBarIndeterminateVisibility(true);
+        spiceManager.execute(new AcceptOrderRequest(orderId), new RequestListener<OrderDTO>() {
            @Override
            public void onRequestFailure(SpiceException spiceException) {
+               NewOrderActivity.this.setProgressBarIndeterminateVisibility(false);
+               AlertDialog.Builder builder = new AlertDialog.Builder(NewOrderActivity.this);
+               builder.setMessage("Не удалось принять заказ, произошла ошибка.")
+                       .setCancelable(false)
+                       .setNegativeButton("OK", new DialogInterface.OnClickListener() {
+                           @Override
+                           public void onClick(DialogInterface dialog, int which) {
+                               dialog.cancel();
+                           }
+                       });
+               AlertDialog alertDialog =  builder.create();
+               alertDialog.show();
                 Log.e("NewOrderActivity", "errorHappend", spiceException);
            }
 
            @Override
-           public void onRequestSuccess(Object o) {
-                Log.i("NewOrderActivity", "accepted ok");
+           public void onRequestSuccess(OrderDTO o) {
+               NewOrderActivity.this.setProgressBarIndeterminateVisibility(false);
+               Log.i("NewOrderActivity", "accepted ok");
+               Intent intent = new Intent(NewOrderActivity.this, OrderActivity.class);
+               intent.putExtra(OrderActivity.ORDER_DTO, o);
+               startActivity(intent);
                finish();
            }
        });
     }
 
     private void onReject(){
-        spiceManager.execute(new RejectOrderRequest(orderId), new RequestListener() {
-            @Override
-            public void onRequestFailure(SpiceException spiceException) {
-                Log.e("NewOrderActivity", "error", spiceException);
-            }
+        spiceManager.execute(new RejectOrderRequest(orderId), new SimpleRequestListener(this) {
+
 
             @Override
             public void onRequestSuccess(Object o) {

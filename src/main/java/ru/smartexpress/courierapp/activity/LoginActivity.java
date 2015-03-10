@@ -72,7 +72,17 @@ public class LoginActivity extends Activity {
                         PLAY_SERVICES_RESOLUTION_REQUEST).show();
             } else {
                 Log.i(TAG, "This device is not supported.");
-                finish();
+                AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                builder.setMessage("Google play services не обнаружены. Устройство не поддерживается.")
+                        .setCancelable(false)
+                        .setNegativeButton("OK", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.cancel();
+                            }
+                        });
+                AlertDialog alertDialog =  builder.create();
+                alertDialog.show();
             }
             return false;
         }
@@ -109,6 +119,9 @@ public class LoginActivity extends Activity {
     }
 
     private void onLogin(final String phone, final String password){
+        if(!checkPlayServices()){
+           return;
+        }
         setProgressBarIndeterminateVisibility(true);
         final LoginRequest loginRequest = new LoginRequest(phone, password, preferences, this);
         Log.i(TAG, "executong login");

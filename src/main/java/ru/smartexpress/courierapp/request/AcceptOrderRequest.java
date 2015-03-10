@@ -1,6 +1,7 @@
 package ru.smartexpress.courierapp.request;
 
 import com.octo.android.robospice.request.springandroid.SpringAndroidSpiceRequest;
+import ru.smartexpress.common.dto.OrderDTO;
 import ru.smartexpress.courierapp.CommonConstants;
 
 import java.net.URI;
@@ -11,20 +12,20 @@ import java.net.URI;
  * @author <a href="mailto:nprokofiev@gmail.com">Nikolay Prokofiev</a>
  * @date 26.01.15 3:41
  */
-public class AcceptOrderRequest extends SpringAndroidSpiceRequest {
+public class AcceptOrderRequest extends SpringAndroidSpiceRequest<OrderDTO> {
 
     private long orderId;
 
     public AcceptOrderRequest(long orderId) {
-        super(Object.class);
+        super(OrderDTO.class);
         this.orderId = orderId;
     }
 
     @Override
-    public Object loadDataFromNetwork() throws Exception {
+    public OrderDTO loadDataFromNetwork() throws Exception {
         String url = CommonConstants.REST_URL+"/courier/acceptOrder?orderId="+orderId;
-        getRestTemplate().headForHeaders(new URI(url));
-        return null;
+        return getRestTemplate().postForObject(url,null,  OrderDTO.class);
+
 
     }
 

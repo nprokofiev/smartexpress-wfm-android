@@ -30,9 +30,18 @@
             </intent-filter>
         </activity>
         <activity android:name=".activity.RegistrationActivity" />
-        <activity android:name=".activity.OrderListActivity" >
+        <activity android:name=".activity.OrderListActivity" />
 
-        </activity>
+
+
+        <activity android:name=".activity.MainActivity" />
+
+        <activity android:name=".activity.CollectionDemoActivity" />
+
+
+
+
+
         <activity android:name=".activity.OrderActivity" />
         <activity android:name=".activity.NewOrderActivity" android:exported="true" />
         <service

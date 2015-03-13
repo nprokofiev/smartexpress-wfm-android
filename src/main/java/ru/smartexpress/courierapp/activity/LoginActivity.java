@@ -40,6 +40,9 @@ public class LoginActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Intent intent = new Intent(this, MainActivity.class);
+        startActivity(intent);
+        finish();
         preferences = getSharedPreferences(LOGIN_PREFS, 0);
         checkAuth();
         setContentView(R.layout.login);

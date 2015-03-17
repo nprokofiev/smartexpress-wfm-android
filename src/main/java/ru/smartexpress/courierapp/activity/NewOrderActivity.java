@@ -13,10 +13,10 @@ import android.widget.TextView;
 import com.octo.android.robospice.SpiceManager;
 import com.octo.android.robospice.persistence.exception.SpiceException;
 import com.octo.android.robospice.request.listener.RequestListener;
-import org.codehaus.jackson.map.util.BeanUtil;
-import ru.smartexpress.common.NotificationField;
+import ru.smartexpress.common.OrderTaskStatus;
 import ru.smartexpress.common.dto.OrderDTO;
 import ru.smartexpress.courierapp.R;
+import ru.smartexpress.courierapp.order.OrderDAO;
 import ru.smartexpress.courierapp.request.AcceptOrderRequest;
 import ru.smartexpress.courierapp.request.RejectOrderRequest;
 import ru.smartexpress.courierapp.request.SimpleRequestListener;
@@ -42,6 +42,7 @@ public class NewOrderActivity extends Activity {
     Button accept;
     Button reject;
     SpiceManager spiceManager = new SpiceManager(JsonSpiceService.class);
+    OrderDAO orderDAO = new OrderDAO(this);
     private Long orderId;
 
 
@@ -101,16 +102,14 @@ public class NewOrderActivity extends Activity {
     }
 
     public void fillText(Intent intent){
-        String destinationAddressI = decode(intent.getStringExtra(NotificationField.DESTINATION_ADDRESS));
-        String sourceAddressI = decode(intent.getStringExtra(NotificationField.SOURCE_ADDRESS));
-        String pickUpDeadlineI = intent.getStringExtra(NotificationField.PICK_UP_DEADLINE);
-        String deadlineI = intent.getStringExtra(NotificationField.DEADLINE);
-        sourceAddress.setText(sourceAddressI);
-        destinationAddress.setText(destinationAddressI);
-            pickUpDeadline.setText(dateFormat.format(new Date(Long.valueOf(pickUpDeadlineI))));
-            deadline.setText(dateFormat.format(new Date(Long.valueOf(deadlineI))));
+        OrderDTO orderDTO = (OrderDTO)intent.getSerializableExtra(OrderActivity.ORDER_DTO);
 
-        orderId = Long.valueOf(getIntent().getStringExtra(NotificationField.ORDER_ID));
+        sourceAddress.setText(orderDTO.getSourceAddress());
+        destinationAddress.setText(orderDTO.getDestinationAddress());
+            pickUpDeadline.setText(dateFormat.format(new Date(Long.valueOf(orderDTO.getPickUpDeadline()))));
+            deadline.setText(dateFormat.format(new Date(Long.valueOf(orderDTO.getDeadline()))));
+
+        orderId = orderDTO.getId();
 
 
         sourceAddress.invalidate();
@@ -151,6 +150,8 @@ public class NewOrderActivity extends Activity {
 
            @Override
            public void onRequestSuccess(OrderDTO o) {
+               o.setStatus(OrderTaskStatus.CONFIRMED.name());
+               orderDAO.saveOrder(o);
                NewOrderActivity.this.setProgressBarIndeterminateVisibility(false);
                Log.i("NewOrderActivity", "accepted ok");
                Intent intent = new Intent(NewOrderActivity.this, OrderActivity.class);

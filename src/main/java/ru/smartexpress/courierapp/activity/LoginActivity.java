@@ -35,14 +35,12 @@ public class LoginActivity extends Activity {
     private static final String TAG = "LoginActivity";
     private  SharedPreferences preferences;
 
-    public static final Class<? extends Activity> defaultActivity = OrderListActivity.class;
+    public static final Class<? extends Activity> defaultActivity = MainActivity.class;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Intent intent = new Intent(this, MainActivity.class);
-        startActivity(intent);
-        finish();
+
         preferences = getSharedPreferences(LOGIN_PREFS, 0);
         checkAuth();
         setContentView(R.layout.login);
@@ -94,7 +92,7 @@ public class LoginActivity extends Activity {
 
     private void checkAuth(){
         if(preferences.contains("username")){
-            Intent intent = new Intent(LoginActivity.this, OrderListActivity.class);
+            Intent intent = new Intent(LoginActivity.this, defaultActivity);
             startActivity(intent);
             finish();
         }
@@ -153,7 +151,7 @@ public class LoginActivity extends Activity {
                 Log.i(TAG, "login ok:"+courier.toString());
 
                 doLogin(phone, password, courier);
-                Intent intent = new Intent(LoginActivity.this, OrderListActivity.class);
+                Intent intent = new Intent(LoginActivity.this, defaultActivity);
                 LoginActivity.this.setProgressBarIndeterminateVisibility(false);
                 startActivity(intent);
                 finish();

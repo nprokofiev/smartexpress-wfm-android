@@ -12,12 +12,28 @@ import android.os.Bundle;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
+import com.octo.android.robospice.SpiceManager;
+import com.octo.android.robospice.persistence.exception.SpiceException;
+import com.octo.android.robospice.request.listener.RequestListener;
+import org.springframework.util.StringUtils;
 import ru.smartexpress.common.NotificationField;
 import ru.smartexpress.common.NotificationType;
+import ru.smartexpress.common.dto.MobileMessageDTO;
+import ru.smartexpress.common.dto.MobileMessageList;
 import ru.smartexpress.courierapp.CommonConstants;
 import ru.smartexpress.courierapp.R;
+import ru.smartexpress.courierapp.activity.MainActivity;
 import ru.smartexpress.courierapp.activity.NewOrderActivity;
+import ru.smartexpress.courierapp.order.UserDAO;
 import ru.smartexpress.courierapp.receiver.GcmBroadcastReceiver;
+import ru.smartexpress.courierapp.request.PendingMessagesRequest;
+import ru.smartexpress.courierapp.service.notification.NewOrderNotificationHandler;
+import ru.smartexpress.courierapp.service.notification.NotificationHandler;
+import ru.smartexpress.courierapp.service.notification.OrderAssignedNotificationHandler;
+import ru.smartexpress.courierapp.service.notification.OrderUpdatedNotificationHandler;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * courier-android
@@ -25,15 +41,32 @@ import ru.smartexpress.courierapp.receiver.GcmBroadcastReceiver;
  * @author <a href="mailto:nprokofiev@gmail.com">Nikolay Prokofiev</a>
  * @date 24.01.15 18:03
  */
-public class GcmIntentService extends IntentService {
-    public static final int NOTIFICATION_ID = 1;
-    private NotificationManager mNotificationManager;
-    NotificationCompat.Builder builder;
-//    private ObjectMapper objectMapper = new ObjectMapper();
+public class GcmIntentService extends IntentService implements RequestListener<MobileMessageList> {
     public GcmIntentService() {
         super(CommonConstants.SENDER_ID);
     }
     public static final String TAG = "GcmIntentService";
+
+    protected SpiceManager spiceManager = new SpiceManager(JsonSpiceService.class);
+
+
+    private List<NotificationHandler> handlers = new ArrayList<NotificationHandler>();
+
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        handlers.add(new NewOrderNotificationHandler(this, spiceManager));
+        handlers.add(new OrderAssignedNotificationHandler(this, spiceManager));
+        handlers.add(new OrderUpdatedNotificationHandler(this, spiceManager));
+
+    }
+
+    @Override
+    public void onStart(Intent intent, int startId) {
+        super.onStart(intent, startId);
+        spiceManager.start(this);
+    }
 
     @Override
     protected void onHandleIntent(Intent intent) {
@@ -56,8 +89,8 @@ public class GcmIntentService extends IntentService {
                 // If it's a regular GCM message, do some work.
             } else if (GoogleCloudMessaging.MESSAGE_TYPE_MESSAGE.equals(messageType)) {
 
-                if(NotificationType.NEW_ORDER.equals(extras.getString(NotificationField.TYPE)))
-                    sendNewOrderNotification(extras);
+                long offsetId = UserDAO.getLastMessageOffset(this);
+                spiceManager.execute(new PendingMessagesRequest(offsetId), this);
                 Log.i(TAG, "Received: " + extras.toString());
             }
         }
@@ -65,34 +98,35 @@ public class GcmIntentService extends IntentService {
         GcmBroadcastReceiver.completeWakefulIntent(intent);
     }
 
-    // Put the message into a notification and post it.
-    // This is just one simple example of what you might choose to do with
-    // a GCM message.
-    private void sendNewOrderNotification(Bundle msg) {
-        mNotificationManager = (NotificationManager)
-                this.getSystemService(Context.NOTIFICATION_SERVICE);
+    @Override
+    public void onRequestFailure(SpiceException spiceException) {
+        Log.e(TAG, "error obtaining messages", spiceException);
+    }
 
-        Intent intent = new Intent(this, NewOrderActivity.class);
-        intent.putExtras(msg);
-        Long notificationId = Long.valueOf(msg.getString(NotificationField.NOTIFICATION_ID));
-        PendingIntent contentIntent = PendingIntent.getActivity(this, 0, intent
-                , 0);
-                String title = msg.getString(NotificationField.TITLE);
-        String address = NewOrderActivity.decode(msg.getString(NotificationField.DESTINATION_ADDRESS));
-        Uri uri= RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
-        NotificationCompat.Builder mBuilder =
-                new NotificationCompat.Builder(this)
-                        .setSmallIcon(R.drawable.ic_launcher)
-                        .setVibrate(new long[] { 1000, 1000, 1000, 1000, 1000 })
-                        .setLights(Color.RED, 3000, 3000)
-                        .setSound(uri)
-                        .setContentTitle(title)
-                        .setAutoCancel(true)
-                        .setStyle(new NotificationCompat.BigTextStyle()
-                                .bigText(address))
-                        .setContentText(address);
+    @Override
+    public void onRequestSuccess(MobileMessageList mobileMessageDTOs) {
+        Log.i(TAG, "messages loaded:"+mobileMessageDTOs.toString());
+        Long offsetId=null;
+        for (MobileMessageDTO messageDTO : mobileMessageDTOs) {
+            offsetId = messageDTO.getId();
+            handleMessage(messageDTO);
+        }
+        if(offsetId!=null) {
+            UserDAO.setLastMessageOffset(this, offsetId);
+            Intent updateMainActivity = new Intent();
+            updateMainActivity.setAction(MainActivity.UPDATE_CONTENT_ACTION);
+            sendBroadcast(updateMainActivity);
+        }
+    }
 
-        mBuilder.setContentIntent(contentIntent);
-        mNotificationManager.notify(notificationId.intValue(), mBuilder.build());
+    private void handleMessage(MobileMessageDTO messageDTO){
+        String type = messageDTO.getType();
+        for (NotificationHandler handler : handlers) {
+            if (handler.getType().equals(type)) {
+                handler.handle(messageDTO);
+                return;
+            }
+        }
+        Log.e(TAG, "no notification handler found for "+type);
     }
 }

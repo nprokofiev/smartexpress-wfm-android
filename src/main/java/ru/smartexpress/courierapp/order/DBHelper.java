@@ -15,12 +15,13 @@ public class DBHelper extends SQLiteOpenHelper {
     private static final int DATABASE_VERSION = 1;
     private static final String DATABASE_NAME = "orders";
     private static final String TABLE_CREATE =
-            "CREATE TABLE orders (" +
+            "CREATE TABLE "+OrderFields.TABLE_NAME+" (" +
                     OrderFields.ID + " INTEGER PRIMARY KEY, " +
                     OrderFields.SOURCE_ADDRESS + " TEXT, " +
                     OrderFields.DESTINATION_ADDRESS + " TEXT, " +
                     OrderFields.ORDER + " TEXT, " +
                     OrderFields.DEADLINE + " INTEGER, " +
+                    OrderFields.STATUS + " TEXT, " +
                     OrderFields.PICKUP_DEADLINE + " INTEGER " +
 
                     ");";

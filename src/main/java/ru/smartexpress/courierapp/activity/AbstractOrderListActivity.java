@@ -1,36 +1,37 @@
 package ru.smartexpress.courierapp.activity;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.ListFragment;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
-import android.widget.Toast;
 import com.octo.android.robospice.SpiceManager;
+import ru.smartexpress.common.OrderTaskStatus;
 import ru.smartexpress.common.dto.OrderDTO;
 import ru.smartexpress.common.dto.OrderList;
-import ru.smartexpress.courierapp.R;
-import ru.smartexpress.courierapp.request.ConfirmedOrdersRequest;
-import ru.smartexpress.courierapp.request.SimpleRequestListener;
+import ru.smartexpress.courierapp.order.OrderDAO;
+import ru.smartexpress.courierapp.order.OrderHelper;
 import ru.smartexpress.courierapp.service.JsonSpiceService;
-import ru.smartexpress.courierapp.service.LocationService;
 
 import java.text.DateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
-public class OrderListActivity extends ListFragment implements MainActivityFragment {
+public abstract class AbstractOrderListActivity extends ListFragment implements MainActivityFragment {
 
-    private SpiceManager spiceManager = new SpiceManager(JsonSpiceService.class);
+
+    protected OrderDAO orderDAO;
+
 
     DateFormat dateFormat = DateFormat.getDateTimeInstance();
-    private List<OrderDTO> orders = new ArrayList<OrderDTO>();
+    protected List<OrderDTO> orders = new ArrayList<OrderDTO>();
+
+
+
     /**
      * Called when the activity is first created.
      */
@@ -38,11 +39,8 @@ public class OrderListActivity extends ListFragment implements MainActivityFragm
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
      //   setContentView(R.layout.order_list);
-
-        String[] values = new String[] {};
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(),
-                android.R.layout.simple_list_item_1, values);
-        setListAdapter(adapter);
+        orderDAO = new OrderDAO(getActivity());
+        loadData();
    //     createOrderListGrid();
     }
 
@@ -56,28 +54,30 @@ public class OrderListActivity extends ListFragment implements MainActivityFragm
      //   Toast.makeText(this, item + " выбран", Toast.LENGTH_LONG).show();
     }
 
-
-
     @Override
-    protected void onStart() {
-        if(!spiceManager.isStarted())
-        spiceManager.start(this);
-        super.onStart();
-        spiceManager.execute(new ConfirmedOrdersRequest(), new SimpleRequestListener<OrderList>(this) {
-            @Override
-            public void onRequestSuccess(OrderList orderDTOs) {
-                    loadData(orderDTOs);
-            }
-        });
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        return super.onCreateView(inflater, container, savedInstanceState);
     }
 
 
+    public abstract OrderList getData();
 
-    protected void loadData(OrderList orderList){
-        orders = orderList;
+    @Override
+    public Fragment getFragment() {
+        return this;
+    }
+
+
+    @Override
+    public void update() {
+        loadData();
+    }
+
+    protected void loadData(){
+        orders = getData();
         List<String> items = new ArrayList<String>();
         for (OrderDTO orderDTO : orders){
-           String order = String.format("Заказ №%d из %s, %s на %s до %tR", orderDTO.getId(), orderDTO.getPartnerName(), orderDTO.getSourceAddress(), orderDTO.getDestinationAddress(), new Date(orderDTO.getDeadline()));
+           String order = OrderHelper.getShortDescription(orderDTO);
            items.add(order);
         }
         ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, items);

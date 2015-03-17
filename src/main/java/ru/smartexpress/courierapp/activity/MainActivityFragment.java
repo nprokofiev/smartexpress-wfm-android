@@ -11,4 +11,5 @@ import android.support.v4.app.Fragment;
 public interface MainActivityFragment {
     String getTitle();
     Fragment getFragment();
+    void update();
 }

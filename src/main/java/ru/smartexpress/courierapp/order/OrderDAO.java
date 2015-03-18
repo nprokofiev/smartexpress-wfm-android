@@ -59,6 +59,15 @@ public class OrderDAO {
         return cursor.getCount();
     }
 
+    public void updateOrderStatus(Long orderId, OrderTaskStatus status){
+        SQLiteDatabase database = dbHelper.getWritableDatabase();
+        String[] whereArgs = new String[]{orderId.toString()};
+        ContentValues cv = new ContentValues();
+        cv.put(OrderFields.STATUS, status.name());
+        database.update(OrderFields.TABLE_NAME,cv, whereOrderId, whereArgs);
+
+    }
+
     public Cursor getCursorByStatus(String status){
         SQLiteDatabase database = dbHelper.getReadableDatabase();
         String whereStatus = OrderFields.STATUS + " = ?";
@@ -78,6 +87,22 @@ public class OrderDAO {
         return orderDTOs;
 
     }
+
+    public OrderList getActiveOrders(){
+        OrderList orderDTOs = new OrderList();
+        SQLiteDatabase database = dbHelper.getReadableDatabase();
+        String whereStatus = OrderFields.STATUS + " IN(?, ?)";
+        String[] whereArgs = new String[]{OrderTaskStatus.CONFIRMED.name(), OrderTaskStatus.PICKED_UP.name()};
+        Cursor cursor = database.query(OrderFields.TABLE_NAME, null, whereStatus, whereArgs, null, null, null);
+        if(cursor.moveToFirst()){
+            do{
+                orderDTOs.add(cursor2orderDTO(cursor));
+            }
+            while (cursor.moveToNext());
+        }
+        return orderDTOs;
+    }
+
 
     private OrderDTO cursor2orderDTO(Cursor cursor){
         OrderDTO orderDTO = new OrderDTO();

@@ -24,6 +24,7 @@ import ru.smartexpress.courierapp.CommonConstants;
 import ru.smartexpress.courierapp.R;
 import ru.smartexpress.courierapp.activity.MainActivity;
 import ru.smartexpress.courierapp.activity.NewOrderActivity;
+import ru.smartexpress.courierapp.helper.SystemHelper;
 import ru.smartexpress.courierapp.order.UserDAO;
 import ru.smartexpress.courierapp.receiver.GcmBroadcastReceiver;
 import ru.smartexpress.courierapp.request.PendingMessagesRequest;
@@ -34,6 +35,8 @@ import ru.smartexpress.courierapp.service.notification.OrderUpdatedNotificationH
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 /**
  * courier-android
@@ -52,6 +55,20 @@ public class GcmIntentService extends IntentService implements RequestListener<M
 
     private List<NotificationHandler> handlers = new ArrayList<NotificationHandler>();
 
+    private Timer timer = new Timer();
+
+    private class BestBeforeTimerTask extends TimerTask {
+        private MobileMessageDTO messageDTO;
+
+        private BestBeforeTimerTask(MobileMessageDTO messageDTO) {
+            this.messageDTO = messageDTO;
+        }
+
+        @Override
+        public void run() {
+            handleBestBefore(messageDTO);
+        }
+    }
 
     @Override
     public void onCreate() {
@@ -113,9 +130,22 @@ public class GcmIntentService extends IntentService implements RequestListener<M
         }
         if(offsetId!=null) {
             UserDAO.setLastMessageOffset(this, offsetId);
-            Intent updateMainActivity = new Intent();
-            updateMainActivity.setAction(MainActivity.UPDATE_CONTENT_ACTION);
-            sendBroadcast(updateMainActivity);
+            SystemHelper.sendUpdateUI(this);
+        }
+    }
+
+
+
+
+
+    private void handleBestBefore(MobileMessageDTO messageDTO){
+        String type = messageDTO.getType();
+        for (NotificationHandler handler : handlers) {
+            if (handler.getType().equals(type)) {
+                Log.i(TAG, "handling bestBefore for "+messageDTO.toString());
+                handler.afterBestBefore(messageDTO);
+                return;
+            }
         }
     }
 
@@ -124,6 +154,9 @@ public class GcmIntentService extends IntentService implements RequestListener<M
         for (NotificationHandler handler : handlers) {
             if (handler.getType().equals(type)) {
                 handler.handle(messageDTO);
+                Integer bestBeforeInterval = messageDTO.getBestBeforeIntervalSec();
+                if(bestBeforeInterval!=null && bestBeforeInterval > 0)
+                    timer.schedule(new BestBeforeTimerTask(messageDTO), bestBeforeInterval);
                 return;
             }
         }

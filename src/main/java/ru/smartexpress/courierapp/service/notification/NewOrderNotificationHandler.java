@@ -4,9 +4,11 @@ import android.content.Context;
 import android.content.Intent;
 import com.octo.android.robospice.SpiceManager;
 import ru.smartexpress.common.NotificationType;
+import ru.smartexpress.common.OrderTaskStatus;
 import ru.smartexpress.common.dto.MobileMessageDTO;
 import ru.smartexpress.common.dto.OrderDTO;
 import ru.smartexpress.courierapp.activity.MainActivity;
+import ru.smartexpress.courierapp.helper.SystemHelper;
 import ru.smartexpress.courierapp.order.OrderHelper;
 
 /**
@@ -28,15 +30,32 @@ public class NewOrderNotificationHandler extends AbstractOrderNotificationHandle
         return NotificationType.NEW_ORDER;
     }
 
-
+    @Override
+    public void afterBestBefore(MobileMessageDTO message) {
+        Long orderId = message.getOrder().getId();
+        OrderDTO orderDTO = orderDAO.getOrderById(orderId);
+        if(OrderTaskStatus.COURIER_SEARCH.equals(orderDTO.getStatus())){
+            orderDAO.deleteOrder(orderId);
+            SystemHelper.sendUpdateUI(context);
+        }
+        checkNotification(orderDTO);
+    }
 
     @Override
     public void handle(MobileMessageDTO messageDTO) {
         OrderDTO orderDTO = messageDTO.getOrder();
         orderDAO.saveOrder(orderDTO);
+        checkNotification(orderDTO);
+    }
+
+    private void checkNotification(OrderDTO orderDTO){
         int newOrderCount = orderDAO.countCourierSearchOrders();
+        if(newOrderCount==0){
+           mNotificationManager.cancel(NEW_ORDER_NOTIFICATION_ID);
+        }
         Intent intent = new Intent(context, MainActivity.class);
         intent.putExtra(MainActivity.TAB_INDEX, 0);
+
 
         String title = "Вам предлагают заказ";
         String address;

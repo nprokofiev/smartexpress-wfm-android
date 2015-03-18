@@ -9,6 +9,7 @@ import android.media.RingtoneManager;
 import android.net.Uri;
 import android.support.v4.app.NotificationCompat;
 import com.octo.android.robospice.SpiceManager;
+import ru.smartexpress.common.dto.MobileMessageDTO;
 import ru.smartexpress.courierapp.R;
 import ru.smartexpress.courierapp.order.OrderDAO;
 
@@ -27,19 +28,23 @@ public abstract class AbstractOrderNotificationHandler implements NotificationHa
 
     protected SpiceManager spiceManager;
 
-
+    protected NotificationManager mNotificationManager;
 
     public AbstractOrderNotificationHandler(Context context, SpiceManager spiceManager) {
         this.context = context;
         orderDAO = new OrderDAO(context);
         this.spiceManager = spiceManager;
+        mNotificationManager = (NotificationManager)
+                context.getSystemService(Context.NOTIFICATION_SERVICE);
     }
 
+    @Override
+    public void afterBestBefore(MobileMessageDTO message) {
 
+    }
 
     protected void pingNotify(String title, String text, int notificationId, Intent intent){
-        NotificationManager mNotificationManager = (NotificationManager)
-                context.getSystemService(Context.NOTIFICATION_SERVICE);
+
         PendingIntent contentIntent = PendingIntent.getActivity(context, 0, intent, 0);
         Uri uri= RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
         NotificationCompat.Builder mBuilder =

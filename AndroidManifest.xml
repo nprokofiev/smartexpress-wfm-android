@@ -33,7 +33,7 @@
 
 
 
-        <activity android:name=".activity.MainActivity" android:launchMode="singleTask"/>
+        <activity android:name=".activity.MainActivity" android:launchMode="singleTask" android:exported="true" />
 
 
 
@@ -41,7 +41,7 @@
 
 
         <activity android:name=".activity.OrderActivity" />
-        <activity android:name=".activity.NewOrderActivity" android:exported="true" />
+        <activity android:name=".activity.NewOrderActivity" />
         <service
             android:name=".service.JsonSpiceService"
             android:exported="false" />

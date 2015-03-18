@@ -18,6 +18,7 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.util.Log;
 import android.view.*;
 import android.widget.TextView;
 import ru.smartexpress.courierapp.R;
@@ -65,6 +66,8 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
         // of the app.
         mAppSectionsPagerAdapter = new AppSectionsPagerAdapter(getSupportFragmentManager());
         mAppSectionsPagerAdapter.add(new CourierSearchOrderFragment());
+        mAppSectionsPagerAdapter.add(new ActiveOrdersFragment());
+        mAppSectionsPagerAdapter.add(new HistoryOrdersFragment());
         // Set up the action bar.
         final ActionBar actionBar = getActionBar();
 
@@ -103,6 +106,15 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
             registerReceiver(updateReceiver, intentFilter);
         }
     }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        int tabIndex = intent.getIntExtra(TAB_INDEX, 0);
+        Log.i(getClass().getName(), "tabIndex from intent:"+tabIndex);
+        mViewPager.setCurrentItem(tabIndex);
+    }
+
 
 
 

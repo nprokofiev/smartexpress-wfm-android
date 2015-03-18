@@ -44,21 +44,18 @@ public abstract class AbstractOrderListActivity extends ListFragment implements 
    //     createOrderListGrid();
     }
 
-    @Override
-    public void onListItemClick(ListView l, View v, int position, long id) {
-        OrderDTO orderDTO = orders.get(position);
-        Intent intent = new Intent(getActivity(), OrderActivity.class);
-        intent.putExtra(OrderActivity.ORDER_DTO, orderDTO);
-        startActivity(intent);
-     //   String item = (String) getListAdapter().getItem(position);
-     //   Toast.makeText(this, item + " выбран", Toast.LENGTH_LONG).show();
-    }
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         return super.onCreateView(inflater, container, savedInstanceState);
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        update();
+    }
 
     public abstract OrderList getData();
 
@@ -70,6 +67,8 @@ public abstract class AbstractOrderListActivity extends ListFragment implements 
 
     @Override
     public void update() {
+        if(orderDAO==null)
+            return;
         loadData();
     }
 

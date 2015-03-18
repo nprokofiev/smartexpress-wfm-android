@@ -2,9 +2,7 @@ package ru.smartexpress.courierapp.activity;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.DialogInterface;
-import android.content.Intent;
-import android.content.SharedPreferences;
+import android.content.*;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -33,7 +31,7 @@ import java.util.Date;
  * @author <a href="mailto:nprokofiev@gmail.com">Nikolay Prokofiev</a>
  * @date 26.01.15 0:52
  */
-public class NewOrderActivity extends Activity {
+public class NewOrderActivity extends UpdatableActivity {
     TextView sourceAddress;
     TextView destinationAddress;
     TextView pickUpDeadline;
@@ -79,10 +77,14 @@ public class NewOrderActivity extends Activity {
         }
     }
 
+
+
     @Override
     protected void onStart() {
         super.onStart();
-        spiceManager.start(this);
+        if(!spiceManager.isStarted()){
+            spiceManager.start(this);
+        }
         checkAuth();
         fillText(getIntent());
     }
@@ -93,6 +95,17 @@ public class NewOrderActivity extends Activity {
         fillText(getIntent());
     }
 
+
+
+
+    @Override
+    public void onUpdateReceived() {
+        OrderDTO orderDTO =  orderDAO.getOrderById(orderId);
+        //destroying activity if it's out of best before
+        if(orderDTO==null)
+            finish();
+
+    }
 
     @Override
     protected void onNewIntent(Intent intent) {
@@ -154,9 +167,10 @@ public class NewOrderActivity extends Activity {
                orderDAO.saveOrder(o);
                NewOrderActivity.this.setProgressBarIndeterminateVisibility(false);
                Log.i("NewOrderActivity", "accepted ok");
-               Intent intent = new Intent(NewOrderActivity.this, OrderActivity.class);
-               intent.putExtra(OrderActivity.ORDER_DTO, o);
+               Intent intent = new Intent(NewOrderActivity.this, MainActivity.class);
+               intent.putExtra(MainActivity.TAB_INDEX, 1);
                startActivity(intent);
+
                finish();
            }
        });
@@ -169,6 +183,7 @@ public class NewOrderActivity extends Activity {
             @Override
             public void onRequestSuccess(Object o) {
                 Log.i("NewOrderActivity", "rejected ok");
+                orderDAO.deleteOrder(orderId);
                 finish();
             }
         });

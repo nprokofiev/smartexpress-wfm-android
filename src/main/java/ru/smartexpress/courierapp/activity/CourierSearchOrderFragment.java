@@ -1,8 +1,11 @@
 package ru.smartexpress.courierapp.activity;
 
+import android.content.Intent;
+import android.view.View;
+import android.widget.ListView;
 import ru.smartexpress.common.OrderTaskStatus;
+import ru.smartexpress.common.dto.OrderDTO;
 import ru.smartexpress.common.dto.OrderList;
-import ru.smartexpress.courierapp.order.OrderDAO;
 
 /**
  * courier-android
@@ -17,6 +20,15 @@ public class CourierSearchOrderFragment extends AbstractOrderListActivity {
     @Override
     public OrderList getData() {
         return orderDAO.getOrdersByStatus(OrderTaskStatus.COURIER_SEARCH.name());
+
+    }
+
+    @Override
+    public void onListItemClick(ListView l, View v, int position, long id) {
+        OrderDTO orderDTO = orders.get(position);
+        Intent intent = new Intent(getActivity(), NewOrderActivity.class);
+        intent.putExtra(OrderActivity.ORDER_DTO, orderDTO);
+        startActivity(intent);
 
     }
 

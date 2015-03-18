@@ -1,6 +1,8 @@
 package ru.smartexpress.courierapp.activity;
 
 import android.app.Activity;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -8,8 +10,10 @@ import android.widget.Button;
 import android.widget.TextView;
 import com.octo.android.robospice.SpiceManager;
 import com.octo.android.robospice.request.springandroid.SpringAndroidSpiceRequest;
+import ru.smartexpress.common.OrderTaskStatus;
 import ru.smartexpress.common.dto.OrderDTO;
 import ru.smartexpress.courierapp.R;
+import ru.smartexpress.courierapp.order.OrderDAO;
 import ru.smartexpress.courierapp.request.DeliverOrderRequest;
 import ru.smartexpress.courierapp.request.PickUpOrderRequest;
 import ru.smartexpress.courierapp.request.SimpleRequestListener;
@@ -24,7 +28,7 @@ import java.util.Date;
  * @author <a href="mailto:nprokofiev@gmail.com">Nikolay Prokofiev</a>
  * @date 22.02.15 14:41
  */
-public class OrderActivity extends Activity implements View.OnClickListener {
+public class OrderActivity extends UpdatableActivity implements View.OnClickListener {
 
     private Button accept;
     private TextView sourceAddress;
@@ -32,10 +36,10 @@ public class OrderActivity extends Activity implements View.OnClickListener {
     private TextView pickUpDeadline;
     private TextView deadline;
     DateFormat dateFormat = DateFormat.getDateTimeInstance();
-    private boolean isPickedUp;
     private OrderDTO orderDTO;
     SpiceManager spiceManager = new SpiceManager(JsonSpiceService.class);
     public static final String ORDER_DTO= "orderDTO";
+    private OrderDAO orderDAO;
 
 
     @Override
@@ -48,19 +52,52 @@ public class OrderActivity extends Activity implements View.OnClickListener {
         destinationAddress = (TextView)findViewById(R.id.destinationAddress);
         pickUpDeadline = (TextView)findViewById(R.id.pickUpDeadline);
         deadline = (TextView)findViewById(R.id.deadline);
+        orderDAO = new OrderDAO(this);
+        Intent intent = getIntent();
+        orderDTO = (OrderDTO)intent.getSerializableExtra(ORDER_DTO);
+
+        setUIStatus(orderDTO.getStatus());
     }
 
     @Override
     protected void onStart() {
         super.onStart();
+        if(!spiceManager.isStarted()){
+            spiceManager.start(this);
+        }
+        updateUI();
 
-        Intent intent = getIntent();
-        orderDTO = (OrderDTO)intent.getSerializableExtra(ORDER_DTO);
+    }
+
+    private void updateUI(){
         sourceAddress.setText(orderDTO.getSourceAddress());
         destinationAddress.setText(orderDTO.getDestinationAddress());
         pickUpDeadline.setText(dateFormat.format(new Date(orderDTO.getPickUpDeadline())));
         deadline.setText(dateFormat.format(new Date(orderDTO.getDeadline())));
+    }
 
+    @Override
+    public void onUpdateReceived() {
+        orderDTO = orderDAO.getOrderById(orderDTO.getId());
+        if(orderDTO == null)
+            finish();
+        updateUI();
+
+    }
+
+    private void setUIStatus(String status){
+        if(OrderTaskStatus.CONFIRMED.name().equals(status)){
+            accept.setText("Я забрал этот заказ");
+            accept.setVisibility(View.VISIBLE);
+        }
+        else if(OrderTaskStatus.PICKED_UP.name().equals(status)){
+            accept.setText("Я доставил этот заказ");
+            accept.setVisibility(View.VISIBLE);
+
+        }
+        else{
+            accept.setVisibility(View.INVISIBLE);
+        }
     }
 
     @Override
@@ -68,13 +105,15 @@ public class OrderActivity extends Activity implements View.OnClickListener {
 
         SpringAndroidSpiceRequest request;
         setProgressBarIndeterminateVisibility(true);
-        if(!isPickedUp){
+        if(OrderTaskStatus.CONFIRMED.name().equals(orderDTO.getStatus())){
             request = new PickUpOrderRequest(orderDTO.getId());
             spiceManager.execute(request, new SimpleRequestListener(this) {
                 @Override
                 public void onRequestSuccess(Object o) {
-                    accept.setText("Я доставил заказ");
-                    isPickedUp = true;
+                    orderDTO.setStatus(OrderTaskStatus.PICKED_UP.name());
+                    setUIStatus(orderDTO.getStatus());
+                    orderDAO.updateOrderStatus(orderDTO.getId(), OrderTaskStatus.PICKED_UP);
+
                 }
             });
 
@@ -84,7 +123,11 @@ public class OrderActivity extends Activity implements View.OnClickListener {
             spiceManager.execute(request, new SimpleRequestListener(this) {
                 @Override
                 public void onRequestSuccess(Object o) {
-                   OrderActivity.this.finish();
+                    orderDAO.updateOrderStatus(orderDTO.getId(), OrderTaskStatus.DONE);
+                    Intent intent = new Intent(OrderActivity.this, MainActivity.class);
+                    intent.putExtra(MainActivity.TAB_INDEX, 2);
+                    startActivity(intent);
+                    OrderActivity.this.finish();
                 }
             });
         }

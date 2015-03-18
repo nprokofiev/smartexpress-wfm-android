@@ -1,6 +1,7 @@
 package ru.smartexpress.courierapp.request;
 
 import com.octo.android.robospice.request.springandroid.SpringAndroidSpiceRequest;
+import com.octo.android.robospice.retry.DefaultRetryPolicy;
 import ru.smartexpress.common.dto.MobileMessageDTO;
 import ru.smartexpress.common.dto.MobileMessageList;
 import ru.smartexpress.courierapp.CommonConstants;
@@ -16,6 +17,7 @@ public class PendingMessagesRequest extends SpringAndroidSpiceRequest<MobileMess
     public PendingMessagesRequest(long offsetId) {
         super(MobileMessageList.class);
         this.offsetId = offsetId;
+        setRetryPolicy(new DefaultRetryPolicy(10, 20000, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
     }
 
     @Override

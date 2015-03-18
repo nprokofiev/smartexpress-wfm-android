@@ -2,6 +2,8 @@ package ru.smartexpress.courierapp.helper;
 
 import android.app.ActivityManager;
 import android.content.Context;
+import android.content.Intent;
+import ru.smartexpress.courierapp.activity.MainActivity;
 
 /**
  * courier-android
@@ -18,5 +20,11 @@ public class SystemHelper {
             }
         }
         return false;
+    }
+
+    public static void sendUpdateUI(Context context){
+        Intent updateMainActivity = new Intent();
+        updateMainActivity.setAction(MainActivity.UPDATE_CONTENT_ACTION);
+        context.sendBroadcast(updateMainActivity);
     }
 }

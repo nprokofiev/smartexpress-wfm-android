@@ -87,7 +87,7 @@ public class RegistrationActivity extends Activity implements View.OnClickListen
         spiceManager.execute(new RegistrationRequest(registrationRequest), new RequestListener<CourierRegistrationResult>() {
             @Override
             public void onRequestFailure(SpiceException e) {
-                Log.i(TAG, "registration failed");
+                Log.e(TAG, "registration failed",e);
                setProgressBarIndeterminateVisibility(false);
 
             }

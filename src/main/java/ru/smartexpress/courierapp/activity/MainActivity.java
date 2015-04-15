@@ -20,9 +20,15 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.*;
+import android.widget.PopupMenu;
 import android.widget.TextView;
+import com.octo.android.robospice.SpiceManager;
+import ru.smartexpress.common.CourierStatus;
 import ru.smartexpress.courierapp.R;
 import ru.smartexpress.courierapp.helper.SystemHelper;
+import ru.smartexpress.courierapp.request.ChangeCourierStatusRequest;
+import ru.smartexpress.courierapp.request.SimpleRequestListener;
+import ru.smartexpress.courierapp.service.JsonSpiceService;
 import ru.smartexpress.courierapp.service.LocationService;
 
 import java.util.ArrayList;
@@ -43,6 +49,11 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
      */
     ViewPager mViewPager;
 
+    private Menu menu;
+
+    private SpiceManager spiceManager = new SpiceManager(JsonSpiceService.class);
+
+
     public static final String TAB_INDEX = "tabIndex";
     public static final String UPDATE_CONTENT_ACTION = "updateContentAction";
     private BroadcastReceiver updateReceiver = new BroadcastReceiver() {
@@ -60,7 +71,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
             startService(intent);
         }
 
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.main_view);
 
         // Create the adapter that will return a fragment for each of the three primary sections
         // of the app.
@@ -116,7 +127,20 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
     }
 
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+        if(!spiceManager.isStarted()){
+            spiceManager.start(this);
+        }
 
+    }
+
+    @Override
+    protected void onStop() {
+       if(spiceManager.isStarted())
+           spiceManager.shouldStop();
+    }
 
     @Override
     public void onTabUnselected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
@@ -176,10 +200,13 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
+        super.onCreateOptionsMenu(menu);
         // Inflate the menu items for use in the action bar
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.main_activity_actions, menu);
-        return super.onCreateOptionsMenu(menu);
+        this.menu = menu;
+        //inflater.inflate(R.menu.top_menu, menu);
+        return true;
     }
 
     @Override
@@ -189,12 +216,42 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
             case R.id.logout:
                 logout();
                 return true;
+            case R.id.statusFree:
+                makeMeOnline();
+                return true;
+            case R.id.statusBusy:
+                makeMeOffline();
+                return true;
+
             default:
                 return super.onOptionsItemSelected(item);
         }
     }
 
+    public void makeMeOffline(){
+        MenuItem item = menu.findItem(R.id.statusMenu);
+        item.setIcon(R.drawable.status_offline);
+        spiceManager.execute(new ChangeCourierStatusRequest(CourierStatus.OFFLINE.name()), new SimpleRequestListener(this) {
+            @Override
+            public void onRequestSuccess(Object o) {
+                Log.i("Main", "courier offline");
+            }
+        });
+    }
+
+    public void makeMeOnline(){
+        MenuItem item = menu.findItem(R.id.statusMenu);
+        item.setIcon(R.drawable.status_online);
+        spiceManager.execute(new ChangeCourierStatusRequest(CourierStatus.ONLINE.name()), new SimpleRequestListener(this) {
+            @Override
+            public void onRequestSuccess(Object o) {
+                Log.i("Main", "courier online");
+            }
+        });
+    }
+
     public void logout(){
+        makeMeOffline();
         Intent intent = new Intent(this, LoginActivity.class);
         SharedPreferences preferences = getSharedPreferences(LoginActivity.LOGIN_PREFS, 0);
         intent.putExtra("username", preferences.getString("username", null));

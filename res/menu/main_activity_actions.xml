@@ -1,6 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+id/statusMenu"
+          android:icon="@drawable/status_online"
+          android:title="Свободен"
+          android:showAsAction="always">
+            <menu>
+            <group android:checkableBehavior="single">
+                    <item android:id="@+id/statusFree"
+                          android:icon="@drawable/status_online"
+                          android:title="Свободен"
+                          android:showAsAction="always" />
+                    <item android:id="@+id/statusBusy"
+                          android:icon="@drawable/status_offline"
+                          android:title="Занят"
+                          android:showAsAction="always" />
+                </group>
+              </menu>
+    </item>
+
+
     <item android:id="@+id/settings"
           android:title="@string/settings" />
     <item android:id="@+id/logout"

@@ -10,7 +10,7 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import com.octo.android.robospice.SpiceManager;
-import ru.smartexpress.common.OrderTaskStatus;
+import ru.smartexpress.common.status.OrderTaskStatus;
 import ru.smartexpress.common.dto.OrderDTO;
 import ru.smartexpress.common.dto.OrderList;
 import ru.smartexpress.courierapp.order.OrderDAO;

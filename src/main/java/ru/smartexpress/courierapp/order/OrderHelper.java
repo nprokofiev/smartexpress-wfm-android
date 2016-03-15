@@ -14,4 +14,9 @@ public class OrderHelper {
     public static String getShortDescription(OrderDTO orderDTO){
         return String.format("Заказ №%d из %s, %s на %s до %tR", orderDTO.getId(), orderDTO.getPartnerName(), orderDTO.getSourceAddress(), orderDTO.getDestinationAddress(), new Date(orderDTO.getDeadline()));
     }
+
+    public static String getNamePhone(String name, String phone){
+         return String.format("%s тел. %s ", name, phone);
+
+    }
 }

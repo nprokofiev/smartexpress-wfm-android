@@ -27,8 +27,8 @@ public class LocationService extends Service implements GoogleApiClient.Connecti
         GoogleApiClient.OnConnectionFailedListener, LocationListener {
     private GoogleApiClient mGoogleApiClient;
     public static final String TAG ="SeLocationService";
-    public static final long LOCATION_UPDATE_INTERVAL = 180000;
-    public static final long FASTEST_UPDATE_INTERVAL = 60000;
+    public static final long LOCATION_UPDATE_INTERVAL = 30000;
+    public static final long FASTEST_UPDATE_INTERVAL = 30000;
     protected SpiceManager spiceManager = new SpiceManager(JsonSpiceService.class);
 
     @Override
@@ -108,7 +108,7 @@ public class LocationService extends Service implements GoogleApiClient.Connecti
         LocationRequest mLocationRequest = new LocationRequest();
         mLocationRequest.setInterval(LOCATION_UPDATE_INTERVAL);
         mLocationRequest.setFastestInterval(FASTEST_UPDATE_INTERVAL);
-        mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+        mLocationRequest.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
         LocationServices.FusedLocationApi.requestLocationUpdates(
                 mGoogleApiClient, mLocationRequest, this);
         Location location = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);

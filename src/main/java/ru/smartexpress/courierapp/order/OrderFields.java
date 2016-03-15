@@ -15,5 +15,10 @@ public interface OrderFields {
     String PICKUP_DEADLINE = "pickupDeadline";
     String STATUS = "status";
     String TABLE_NAME = "orders";
+    String CUSTOMER_NAME = "customerName";
+    String PARTNER_NAME = "partnerName";
+    String PARTNER_PHONE = "partnerPhone";
+    String CUSTOMER_PHONE = "customerPhone";
+    String COST = "cost";
 
 }

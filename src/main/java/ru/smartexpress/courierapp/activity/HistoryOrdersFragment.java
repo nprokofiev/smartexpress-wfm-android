@@ -4,7 +4,7 @@ import android.content.Intent;
 import android.view.View;
 import android.widget.ListView;
 import android.widget.Toast;
-import ru.smartexpress.common.OrderTaskStatus;
+import ru.smartexpress.common.status.OrderTaskStatus;
 import ru.smartexpress.common.dto.OrderDTO;
 import ru.smartexpress.common.dto.OrderList;
 

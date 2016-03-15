@@ -1,11 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
               android:orientation="vertical"
               android:layout_width="fill_parent"
               android:layout_height="fill_parent"
-              android:padding="16dp"
-              android:id="@+id/orderListItem">
 
+              android:id="@+id/orderListItem">
+    <ScrollView
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:paddingBottom="80dp"
+        >
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp"
+            >
     <!-- otkuda -->
     <TextView
         android:layout_width="match_parent"
@@ -62,16 +72,30 @@
         android:text="16:45"
         android:id="@+id/deadlineOrderListItem"
         />
-    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                    android:orientation="horizontal"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent">
+
+
+        </LinearLayout>
+    </ScrollView>
+    <RelativeLayout
+        android:orientation="horizontal"
+        android:layout_height="70dp"
+        android:layout_width="fill_parent"
+        android:id="@+id/footer"
+        android:layout_alignParentBottom="true"
+        android:gravity="center"
+        android:layout_weight="1"
+        android:paddingLeft="20dp"
+        android:paddingRight="20dp"
+        android:background="#000000"
+        >
 
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Принять"
-            android:paddingLeft="20dp"
+            android:drawableLeft="@drawable/ic_check_white_18dp"
+            android:drawablePadding="5dp"
+            android:paddingLeft="15dp"
             android:paddingRight="20dp"
             android:layout_alignParentLeft="true"
             android:id="@+id/acceptOrderListItem"/>
@@ -79,11 +103,13 @@
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:paddingLeft="20dp"
+            android:drawableLeft="@drawable/ic_cancel_white_18dp"
+            android:drawablePadding="5dp"
+            android:paddingLeft="15dp"
             android:paddingRight="20dp"
             android:text="Отклонить"
             android:layout_alignParentRight="true"
             android:id="@+id/rejectOrderListItem"/>
     </RelativeLayout>
-</LinearLayout>
+</RelativeLayout>
 

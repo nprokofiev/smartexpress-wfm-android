@@ -7,13 +7,15 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import com.octo.android.robospice.SpiceManager;
 import com.octo.android.robospice.request.springandroid.SpringAndroidSpiceRequest;
-import ru.smartexpress.common.OrderTaskStatus;
+import ru.smartexpress.common.status.OrderTaskStatus;
 import ru.smartexpress.common.dto.OrderDTO;
 import ru.smartexpress.courierapp.R;
 import ru.smartexpress.courierapp.order.OrderDAO;
+import ru.smartexpress.courierapp.order.OrderHelper;
 import ru.smartexpress.courierapp.request.DeliverOrderRequest;
 import ru.smartexpress.courierapp.request.PickUpOrderRequest;
 import ru.smartexpress.courierapp.request.SimpleRequestListener;
@@ -35,6 +37,11 @@ public class OrderActivity extends UpdatableActivity implements View.OnClickList
     private TextView destinationAddress;
     private TextView pickUpDeadline;
     private TextView deadline;
+    private TextView partnerName;
+    private TextView customerName;
+    private TextView orderContents;
+    private TextView cost;
+    private RelativeLayout footerLayout;
     DateFormat dateFormat = DateFormat.getDateTimeInstance();
     private OrderDTO orderDTO;
     SpiceManager spiceManager = new SpiceManager(JsonSpiceService.class);
@@ -51,7 +58,12 @@ public class OrderActivity extends UpdatableActivity implements View.OnClickList
         sourceAddress = (TextView)findViewById(R.id.sourceAddress);
         destinationAddress = (TextView)findViewById(R.id.destinationAddress);
         pickUpDeadline = (TextView)findViewById(R.id.pickUpDeadline);
-        deadline = (TextView)findViewById(R.id.deadline);
+        deadline = (TextView)findViewById(R.id.deliveryDeadline);
+        partnerName = (TextView)findViewById(R.id.partnerName);
+        customerName = (TextView)findViewById(R.id.customerName);
+        orderContents = (TextView)findViewById(R.id.orderContents);
+        cost = (TextView)findViewById(R.id.orderCost);
+        footerLayout = (RelativeLayout)findViewById(R.id.orderTrackingFooter);
         orderDAO = new OrderDAO(this);
         Intent intent = getIntent();
         orderDTO = (OrderDTO)intent.getSerializableExtra(ORDER_DTO);
@@ -74,6 +86,12 @@ public class OrderActivity extends UpdatableActivity implements View.OnClickList
         destinationAddress.setText(orderDTO.getDestinationAddress());
         pickUpDeadline.setText(dateFormat.format(new Date(orderDTO.getPickUpDeadline())));
         deadline.setText(dateFormat.format(new Date(orderDTO.getDeadline())));
+        partnerName.setText(OrderHelper.getNamePhone(orderDTO.getPartnerName(), orderDTO.getPartnerPhone()));
+        customerName.setText(OrderHelper.getNamePhone(orderDTO.getCustomerName(), orderDTO.getCustomerPhone()));
+        orderContents.setText(orderDTO.getOrder());
+        cost.setText(""+orderDTO.getCost()+" руб");
+
+
     }
 
     @Override
@@ -89,14 +107,18 @@ public class OrderActivity extends UpdatableActivity implements View.OnClickList
         if(OrderTaskStatus.CONFIRMED.name().equals(status)){
             accept.setText("Я забрал этот заказ");
             accept.setVisibility(View.VISIBLE);
+            footerLayout.setVisibility(View.VISIBLE);
         }
         else if(OrderTaskStatus.PICKED_UP.name().equals(status)){
             accept.setText("Я доставил этот заказ");
             accept.setVisibility(View.VISIBLE);
+            footerLayout.setVisibility(View.VISIBLE);
 
         }
         else{
             accept.setVisibility(View.INVISIBLE);
+            footerLayout.setVisibility(View.INVISIBLE);
+
         }
     }
 

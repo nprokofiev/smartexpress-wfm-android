@@ -23,11 +23,7 @@ public class MobileMessageIntentService extends IntentService  {
     private NotificationProcessor notificationProcessor;
 
 
-    @Override
-    public void onStart(Intent intent, int startId) {
-        super.onStart(intent, startId);
-        notificationProcessor = new NotificationProcessor(this);
-    }
+
 
     @Override
     protected void onHandleIntent(Intent intent) {
@@ -49,12 +45,19 @@ public class MobileMessageIntentService extends IntentService  {
                 Log.i(TAG, "Deleted messages on server: " + extras.toString());
                 // If it's a regular GCM message, do some work.
             } else if (GoogleCloudMessaging.MESSAGE_TYPE_MESSAGE.equals(messageType)) {
-                notificationProcessor.processPendingMessages();
+                process();
+
                 Log.i(TAG, "Received: " + extras.toString());
             }
         }
         // Release the wake lock provided by the WakefulBroadcastReceiver.
         GcmBroadcastReceiver.completeWakefulIntent(intent);
+    }
+
+    private void process(){
+        if(notificationProcessor==null)
+            notificationProcessor = new NotificationProcessor(this);
+        notificationProcessor.processPendingMessages();
     }
 
 }

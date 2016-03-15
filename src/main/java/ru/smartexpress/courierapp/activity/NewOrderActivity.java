@@ -11,7 +11,7 @@ import android.widget.TextView;
 import com.octo.android.robospice.SpiceManager;
 import com.octo.android.robospice.persistence.exception.SpiceException;
 import com.octo.android.robospice.request.listener.RequestListener;
-import ru.smartexpress.common.OrderTaskStatus;
+import ru.smartexpress.common.status.OrderTaskStatus;
 import ru.smartexpress.common.dto.OrderDTO;
 import ru.smartexpress.courierapp.R;
 import ru.smartexpress.courierapp.order.OrderDAO;

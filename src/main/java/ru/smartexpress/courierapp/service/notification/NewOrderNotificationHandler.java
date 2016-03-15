@@ -4,7 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import com.octo.android.robospice.SpiceManager;
 import ru.smartexpress.common.NotificationType;
-import ru.smartexpress.common.OrderTaskStatus;
+import ru.smartexpress.common.status.OrderTaskStatus;
 import ru.smartexpress.common.dto.MobileMessageDTO;
 import ru.smartexpress.common.dto.OrderDTO;
 import ru.smartexpress.courierapp.activity.MainActivity;

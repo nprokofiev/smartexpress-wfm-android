@@ -1,72 +1,157 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
               android:orientation="vertical"
-              android:layout_width="match_parent"
-              android:layout_height="match_parent"
-              android:padding="10dp"
+              android:layout_width="fill_parent"
+              android:layout_height="fill_parent"
+
     >
-    <!-- otkuda -->
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Откуда везти:"
-        android:id="@+id/sourceAddressLabel"
 
-        android:textStyle="bold"/>
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="adress"
-        android:id="@+id/sourceAddress"
-        />
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Во сколько забрать:"
-        android:paddingTop="10dp"
-        android:id="@+id/pickUpDeadlineLabel"
+    <ScrollView
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:fillViewport="true"
+        android:paddingBottom="80dp"
+        >
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="10dp"
+            >
+                <!-- otkuda -->
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Откуда везти:"
+                    android:id="@+id/sourceAddressLabel"
 
-        android:textStyle="bold"/>
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="15:45"
-        android:id="@+id/pickUpDeadline"
-        />
-    <!-- kuda -->
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Куда везти:"
-        android:paddingTop="10dp"
-        android:id="@+id/destinationAddressLabel"
+                    android:textStyle="bold"/>
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="adress"
+                    android:id="@+id/sourceAddress"
+                    />
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Во сколько забрать:"
+                    android:paddingTop="10dp"
+                    android:id="@+id/pickUpDeadlineLabel"
 
-        android:textStyle="bold"/>
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="destination address"
-        android:id="@+id/destinationAddress"
-        />
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Во сколько привезти:"
-        android:paddingTop="10dp"
-        android:id="@+id/deadlineLabel"
-        android:textStyle="bold"/>
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="16:45"
-        android:id="@+id/deadline"
-        />
+                    android:textStyle="bold"/>
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="15:45"
+                    android:id="@+id/pickUpDeadline"
+                    />
+                <!-- kuda -->
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Куда везти:"
+                    android:paddingTop="10dp"
+                    android:id="@+id/destinationAddressLabel"
 
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Я забрал этот заказ"
-        android:id="@+id/changeOrderStatus"
-        android:layout_gravity="center_horizontal"/>
-</LinearLayout>
+                    android:textStyle="bold"/>
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="destination address"
+                    android:id="@+id/destinationAddress"
+                    />
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Во сколько привезти:"
+                    android:paddingTop="10dp"
+                    android:id="@+id/deadlineLabel"
+                    android:textStyle="bold"/>
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="16:45"
+                    android:id="@+id/deliveryDeadline"
+                    />
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Партнер(Ресторан):"
+                    android:paddingTop="10dp"
+                    android:id="@+id/partnerNameLabel"
+                    android:textStyle="bold"/>
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="МУ-МУ"
+                    android:id="@+id/partnerName"
+                    />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Клиент:"
+                    android:paddingTop="10dp"
+                    android:id="@+id/customerNameLabel"
+                    android:textStyle="bold"/>
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Николай"
+                    android:id="@+id/customerName"
+                    />
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Стоимость заказа:"
+                    android:paddingTop="10dp"
+                    android:id="@+id/orderCostLabel"
+                    android:textStyle="bold"/>
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="100 руб"
+                    android:id="@+id/orderCost"
+                    />
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Содержимое заказа:"
+                    android:paddingTop="10dp"
+                    android:id="@+id/orderContentsLabel"
+                    android:textStyle="bold"/>
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Каша гречневая; Морс"
+                    android:id="@+id/orderContents"
+                    />
+
+
+        </LinearLayout>
+    </ScrollView>
+    <RelativeLayout
+        android:orientation="vertical"
+        android:layout_height="70dp"
+        android:layout_width="fill_parent"
+        android:id="@+id/orderTrackingFooter"
+        android:layout_alignParentBottom="true"
+        android:gravity="center"
+        android:background="#000000"
+        >
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:text="Я забрал этот заказ"
+            android:drawablePadding="5dp"
+            android:paddingLeft="15dp"
+            android:paddingRight="20dp"
+            android:layout_margin="10dp"
+            android:drawableLeft="@drawable/ic_check_white_18dp"
+            android:id="@+id/changeOrderStatus"
+            />
+    </RelativeLayout>
+</RelativeLayout>

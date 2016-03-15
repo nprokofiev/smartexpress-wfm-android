@@ -23,7 +23,7 @@ import android.view.*;
 import android.widget.PopupMenu;
 import android.widget.TextView;
 import com.octo.android.robospice.SpiceManager;
-import ru.smartexpress.common.CourierStatus;
+import ru.smartexpress.common.status.CourierStatus;
 import ru.smartexpress.courierapp.R;
 import ru.smartexpress.courierapp.helper.SystemHelper;
 import ru.smartexpress.courierapp.request.ChangeCourierStatusRequest;
@@ -136,11 +136,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 
     }
 
-    @Override
-    protected void onStop() {
-       if(spiceManager.isStarted())
-           spiceManager.shouldStop();
-    }
+
 
     @Override
     public void onTabUnselected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
@@ -196,6 +192,8 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
         super.onDestroy();
         if(updateReceiver!=null)
             unregisterReceiver(updateReceiver);
+        if(spiceManager.isStarted())
+            spiceManager.shouldStop();
     }
 
     @Override

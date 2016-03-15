@@ -22,6 +22,11 @@ public class DBHelper extends SQLiteOpenHelper {
                     OrderFields.ORDER + " TEXT, " +
                     OrderFields.DEADLINE + " INTEGER, " +
                     OrderFields.STATUS + " TEXT, " +
+                    OrderFields.PARTNER_NAME + " TEXT, " +
+                    OrderFields.CUSTOMER_NAME + " TEXT, " +
+                    OrderFields.PARTNER_PHONE + " TEXT, " +
+                    OrderFields.CUSTOMER_PHONE + " TEXT, " +
+                    OrderFields.COST + " REAL, " +
                     OrderFields.PICKUP_DEADLINE + " INTEGER " +
 
                     ");";

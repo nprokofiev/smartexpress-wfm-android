@@ -4,7 +4,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import ru.smartexpress.common.OrderTaskStatus;
+import ru.smartexpress.common.status.OrderTaskStatus;
 import ru.smartexpress.common.dto.OrderDTO;
 import ru.smartexpress.common.dto.OrderList;
 
@@ -112,7 +112,12 @@ public class OrderDAO {
         orderDTO.setOrder(cursor.getString(cursor.getColumnIndex(OrderFields.ORDER)));
         orderDTO.setPickUpDeadline(cursor.getLong(cursor.getColumnIndex(OrderFields.PICKUP_DEADLINE)));
         orderDTO.setSourceAddress(cursor.getString(cursor.getColumnIndex(OrderFields.SOURCE_ADDRESS)));
+        orderDTO.setCustomerName(cursor.getString(cursor.getColumnIndex(OrderFields.CUSTOMER_NAME)));
         orderDTO.setStatus(cursor.getString(cursor.getColumnIndex(OrderFields.STATUS)));
+        orderDTO.setCustomerPhone(cursor.getString(cursor.getColumnIndex(OrderFields.CUSTOMER_PHONE)));
+        orderDTO.setPartnerName(cursor.getString(cursor.getColumnIndex(OrderFields.PARTNER_NAME)));
+        orderDTO.setPartnerPhone(cursor.getString(cursor.getColumnIndex(OrderFields.PARTNER_PHONE)));
+        orderDTO.setCost(cursor.getDouble(cursor.getColumnIndex(OrderFields.COST)));
         return orderDTO;
     }
 
@@ -125,6 +130,11 @@ public class OrderDAO {
         cv.put(OrderFields.PICKUP_DEADLINE, orderDTO.getPickUpDeadline());
         cv.put(OrderFields.SOURCE_ADDRESS, orderDTO.getSourceAddress());
         cv.put(OrderFields.STATUS, orderDTO.getStatus());
+        cv.put(OrderFields.CUSTOMER_NAME, orderDTO.getCustomerName());
+        cv.put(OrderFields.CUSTOMER_PHONE, orderDTO.getCustomerPhone());
+        cv.put(OrderFields.PARTNER_NAME, orderDTO.getPartnerName());
+        cv.put(OrderFields.PARTNER_PHONE, orderDTO.getPartnerPhone());
+        cv.put(OrderFields.COST, orderDTO.getCost());
         return cv;
     }
 }

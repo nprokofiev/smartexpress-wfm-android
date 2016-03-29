@@ -3,6 +3,7 @@ package ru.smartexpress.courierapp.helper;
 import android.app.ActivityManager;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Looper;
 import ru.smartexpress.courierapp.activity.MainActivity;
 
 /**
@@ -26,5 +27,9 @@ public class SystemHelper {
         Intent updateMainActivity = new Intent();
         updateMainActivity.setAction(MainActivity.UPDATE_CONTENT_ACTION);
         context.sendBroadcast(updateMainActivity);
+    }
+
+    public static boolean isUiThread(){
+        return Looper.myLooper() == Looper.getMainLooper();
     }
 }

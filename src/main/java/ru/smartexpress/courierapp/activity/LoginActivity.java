@@ -17,6 +17,7 @@ import com.octo.android.robospice.persistence.exception.SpiceException;
 import com.octo.android.robospice.request.listener.RequestListener;
 import ru.smartexpress.common.dto.UserDTO;
 import ru.smartexpress.courierapp.R;
+import ru.smartexpress.courierapp.helper.AuthHelper;
 import ru.smartexpress.courierapp.request.LoginRequest;
 import ru.smartexpress.courierapp.service.JsonSpiceService;
 
@@ -33,15 +34,12 @@ public class LoginActivity extends Activity {
     public static final String LOGIN_PREFS = "usersettings";
     protected SpiceManager spiceManager = new SpiceManager(JsonSpiceService.class);
     private static final String TAG = "LoginActivity";
-    private  SharedPreferences preferences;
 
     public static final Class<? extends Activity> defaultActivity = MainActivity.class;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        preferences = getSharedPreferences(LOGIN_PREFS, 0);
         checkAuth();
         setContentView(R.layout.login);
         phoneEditText = (EditText) findViewById(R.id.userPhoneLoginForm);
@@ -91,7 +89,7 @@ public class LoginActivity extends Activity {
     }
 
     private void checkAuth(){
-        if(preferences.contains("username")){
+        if(AuthHelper.isLoggedIn(this)){
             Intent intent = new Intent(LoginActivity.this, defaultActivity);
             startActivity(intent);
             finish();
@@ -124,7 +122,7 @@ public class LoginActivity extends Activity {
            return;
         }
         setProgressBarIndeterminateVisibility(true);
-        final LoginRequest loginRequest = new LoginRequest(phone, password, preferences, this);
+        final LoginRequest loginRequest = new LoginRequest(phone, password, this);
         Log.i(TAG, "executong login");
         spiceManager.execute(loginRequest, new RequestListener<UserDTO>() {
             @Override
@@ -149,8 +147,7 @@ public class LoginActivity extends Activity {
             @Override
             public void onRequestSuccess(UserDTO courier) {
                 Log.i(TAG, "login ok:"+courier.toString());
-
-                doLogin(phone, password, courier);
+                AuthHelper.login(phone, password, LoginActivity.this);
                 Intent intent = new Intent(LoginActivity.this, defaultActivity);
                 LoginActivity.this.setProgressBarIndeterminateVisibility(false);
                 startActivity(intent);
@@ -160,10 +157,5 @@ public class LoginActivity extends Activity {
 
     }
 
-    private void doLogin(String username, String password, UserDTO userDTO){
-        SharedPreferences.Editor editor = preferences.edit();
-        editor.putString("username", username);
-        editor.putString("password", password);
-        editor.commit();
-    }
+
 }

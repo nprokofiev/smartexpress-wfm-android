@@ -1,6 +1,7 @@
 package ru.smartexpress.courierapp.request;
 
 import android.content.Context;
+import android.content.ContextWrapper;
 import android.content.SharedPreferences;
 import android.provider.Settings;
 import android.util.Log;
@@ -12,6 +13,7 @@ import org.springframework.web.client.RestTemplate;
 import ru.smartexpress.common.dto.LoginRequestDTO;
 import ru.smartexpress.common.dto.UserDTO;
 import ru.smartexpress.courierapp.CommonConstants;
+import ru.smartexpress.courierapp.helper.AuthHelper;
 import ru.smartexpress.courierapp.service.JsonSpiceService;
 
 import java.io.IOException;
@@ -26,14 +28,12 @@ import java.util.Collections;
 public class LoginRequest extends SpringAndroidSpiceRequest<UserDTO> {
     private String phone;
     private String password;
-    private SharedPreferences preferences;
-    private Context context;
+    private ContextWrapper context;
     public static final String TAG = "LoginRequest";
-    public LoginRequest(String phone, String password, SharedPreferences preferences, Context context) {
+    public LoginRequest(String phone, String password, ContextWrapper context) {
         super(UserDTO.class);
         this.phone = phone;
         this.password = password;
-        this.preferences = preferences;
         this.context = context;
         setRetryPolicy(new DefaultRetryPolicy(0, 1, 1));
     }
@@ -56,14 +56,12 @@ public class LoginRequest extends SpringAndroidSpiceRequest<UserDTO> {
     }
 
     private String getGcmRegistrationId() throws IOException{
-        String registrationId = preferences.getString(CommonConstants.REGISTRATION_ID_KEY, null);
+        String registrationId = AuthHelper.getGcmRegistrationId(context);
         if(registrationId == null) {
             GoogleCloudMessaging gcm = GoogleCloudMessaging.getInstance(context);
             registrationId = gcm.register(CommonConstants.SENDER_ID);
             Log.i(TAG, "got registrationId: "+registrationId);
-            SharedPreferences.Editor editor = preferences.edit();
-            editor.putString(CommonConstants.REGISTRATION_ID_KEY, registrationId);
-            editor.commit();
+            AuthHelper.setGcmRegistrationId(registrationId, context);
         }
         return registrationId;
     }

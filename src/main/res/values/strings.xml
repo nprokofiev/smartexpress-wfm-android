@@ -1,17 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">smartexpress</string>
+    <string name="app_name">SmartExpress</string>
     <string name="submit">OK</string>
     <string name="register">Регистрация</string>
     <string name="phone">Телефон</string>
     <string name="password">Пароль</string>
     <string name="logout">Выйти</string>
     <string name="settings">Настройки</string>
-
-
-
-    <string name="dummy_section_text">Section %1d is just a dummy section.</string>
-
-    <string name="demo_external_activity">Demo External Activity</string>
-    <string name="demo_collection">Demo Collection</string>
 </resources>

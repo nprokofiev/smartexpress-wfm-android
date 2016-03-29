@@ -25,6 +25,7 @@ import android.widget.TextView;
 import com.octo.android.robospice.SpiceManager;
 import ru.smartexpress.common.status.CourierStatus;
 import ru.smartexpress.courierapp.R;
+import ru.smartexpress.courierapp.helper.AuthHelper;
 import ru.smartexpress.courierapp.helper.SystemHelper;
 import ru.smartexpress.courierapp.request.ChangeCourierStatusRequest;
 import ru.smartexpress.courierapp.request.SimpleRequestListener;
@@ -136,7 +137,12 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 
     }
 
-
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if(!AuthHelper.isLoggedIn(this))
+            AuthHelper.forceLogout(this);
+    }
 
     @Override
     public void onTabUnselected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {

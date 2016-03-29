@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import ru.smartexpress.common.dto.OrderDTO;
+import ru.smartexpress.courierapp.helper.AuthHelper;
 
 /**
  * courier-android
@@ -33,6 +34,13 @@ public abstract class UpdatableActivity extends Activity {
     protected void onDestroy() {
         super.onDestroy();
         unregisterReceiver(updateReceiver);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if(!AuthHelper.isLoggedIn(this))
+            AuthHelper.forceLogout(this);
     }
 
     public abstract void onUpdateReceived();

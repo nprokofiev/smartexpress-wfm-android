@@ -5,6 +5,7 @@ import android.view.View;
 import android.widget.ListView;
 import ru.smartexpress.common.dto.OrderDTO;
 import ru.smartexpress.common.dto.OrderList;
+import ru.smartexpress.courierapp.R;
 
 /**
  * courier-android
@@ -27,7 +28,10 @@ public class ActiveOrdersFragment extends AbstractOrderListActivity {
 
     }
 
-
+    @Override
+    public int getImageResource() {
+        return R.drawable.ic_favorite_selector;
+    }
 
     @Override
     public String getTitle() {

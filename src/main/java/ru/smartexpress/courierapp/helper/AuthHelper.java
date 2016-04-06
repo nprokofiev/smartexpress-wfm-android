@@ -51,6 +51,13 @@ public class AuthHelper {
         editor.putBoolean(IS_LOGGED_IN, true);
         editor.commit();
     }
+
+    public static void setLoginCredentials(String username, String password, ContextWrapper contextWrapper){
+        SharedPreferences.Editor editor = getPrefs(contextWrapper).edit();
+        editor.putString(USERNAME, username);
+        editor.putString(PASSWORD, password);
+        editor.commit();
+    }
     public static void forceLogout(ContextWrapper context){
         SharedPreferences.Editor editor = getPrefs(context).edit();
         editor.putBoolean(IS_LOGGED_IN, false);

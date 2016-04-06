@@ -7,4 +7,20 @@
     <string name="password">Пароль</string>
     <string name="logout">Выйти</string>
     <string name="settings">Настройки</string>
+    <string name="must_not_be_empty">Поле неверно заполнено</string>
+    <string name="title_activity_login">Вход в систему</string>
+    <string name="error_invalid_password">Пароль должен состоять только из букв и цифр латинского алфавита и иметь длину не менее 6ти символов</string>
+    <string name="error_password_does_not_match">Пароли не совпадают</string>
+    <string name="error_phone_not_valid">Телефон должен быть в формате:7хххххххххх</string>
+    <string name="rest_error">Сервер SmartExpress вернул ошибку. Повторите попытку позднее. Возможно ваше приложение требует обновления.</string>
+    <string name="no_network_error">Проблемы с сетью. Невозможно подключиться к серверу.</string>
+    <string name="unknown_error">Неизвестная ошибка. Возможно ваше приложение требует обновления.</string>
+    <string name="invalid_login_or_password">Неверный логин или пароль</string>
+    <string name="working">Смартэкспресс</string>
+    <string name="currently_working_for_smartexpress">На работе в Смартэкспресс</string>
+    <string name="bad_device">Ваше устройство не поддерживается</string>
+    <string name="gcm_problem">Проблема с регистрацией GCM. Возможно ваше приложение требует обновления.</string>
+    <string name="done_ok">Заказ успешно завершен</string>
+    <string name="updated_ok">Заказ успешно обновлен</string>
+
 </resources>

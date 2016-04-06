@@ -30,6 +30,7 @@ public class DBHelper extends SQLiteOpenHelper {
                     OrderFields.PICKUP_DEADLINE + " INTEGER " +
 
                     ");";
+    private static final String DROP_TABLE = "DROP TABLE "+OrderFields.TABLE_NAME+";";
 
     public DBHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -42,6 +43,7 @@ public class DBHelper extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-
+       db.execSQL(DROP_TABLE);
+        db.execSQL(TABLE_CREATE);
     }
 }

@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import ru.smartexpress.common.dto.OrderDTO;
+import ru.smartexpress.courierapp.core.SeUser;
 import ru.smartexpress.courierapp.helper.AuthHelper;
 
 /**
@@ -39,8 +40,13 @@ public abstract class UpdatableActivity extends Activity {
     @Override
     protected void onResume() {
         super.onResume();
-        if(!AuthHelper.isLoggedIn(this))
-            AuthHelper.forceLogout(this);
+        if (SeUser.current()==null){
+            Intent intent = new Intent(this,LoginActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(intent);
+            finish();
+            return;
+        }
     }
 
     public abstract void onUpdateReceived();

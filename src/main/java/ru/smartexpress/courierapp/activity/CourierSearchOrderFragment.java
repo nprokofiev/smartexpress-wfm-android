@@ -6,6 +6,7 @@ import android.widget.ListView;
 import ru.smartexpress.common.status.OrderTaskStatus;
 import ru.smartexpress.common.dto.OrderDTO;
 import ru.smartexpress.common.dto.OrderList;
+import ru.smartexpress.courierapp.R;
 
 /**
  * courier-android
@@ -30,6 +31,11 @@ public class CourierSearchOrderFragment extends AbstractOrderListActivity {
         intent.putExtra(OrderActivity.ORDER_DTO, orderDTO);
         startActivity(intent);
 
+    }
+
+    @Override
+    public int getImageResource() {
+        return R.drawable.ic_add_shopping_cart_selector;
     }
 
     @Override

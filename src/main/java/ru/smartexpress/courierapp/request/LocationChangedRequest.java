@@ -10,7 +10,7 @@ import ru.smartexpress.courierapp.CommonConstants;
  * @author <a href="mailto:nprokofiev@gmail.com">Nikolay Prokofiev</a>
  * @date 11.01.15 17:01
  */
-public class LocationChangedRequest extends SpringAndroidSpiceRequest {
+public class LocationChangedRequest extends AbstractSpringAndroidRequest {
     private CourierLocation location;
     public LocationChangedRequest(CourierLocation location) {
         super(Object.class);
@@ -20,7 +20,7 @@ public class LocationChangedRequest extends SpringAndroidSpiceRequest {
 
     @Override
     public Object loadDataFromNetwork() throws Exception {
-        String url = CommonConstants.REST_URL+"/courier/updateLocation";
+        String url = baseUrl+"/courier/updateLocation";
         getRestTemplate().put(url, location);
         return null;
 //        getRestTemplate().postForObject(url, location, String.class);

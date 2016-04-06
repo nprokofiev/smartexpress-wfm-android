@@ -7,6 +7,7 @@ import android.widget.Toast;
 import ru.smartexpress.common.status.OrderTaskStatus;
 import ru.smartexpress.common.dto.OrderDTO;
 import ru.smartexpress.common.dto.OrderList;
+import ru.smartexpress.courierapp.R;
 
 /**
  * courier-android
@@ -31,5 +32,10 @@ public class HistoryOrdersFragment extends AbstractOrderListActivity {
         Intent intent = new Intent(getActivity(), OrderActivity.class);
         intent.putExtra(OrderActivity.ORDER_DTO, orderDTO);
         startActivity(intent);
+    }
+
+    @Override
+    public int getImageResource() {
+        return R.drawable.ic_place_selector;
     }
 }

@@ -9,11 +9,13 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 import com.octo.android.robospice.SpiceManager;
 import com.octo.android.robospice.request.springandroid.SpringAndroidSpiceRequest;
 import ru.smartexpress.common.status.OrderTaskStatus;
 import ru.smartexpress.common.dto.OrderDTO;
 import ru.smartexpress.courierapp.R;
+import ru.smartexpress.courierapp.SeApplication;
 import ru.smartexpress.courierapp.order.OrderDAO;
 import ru.smartexpress.courierapp.order.OrderHelper;
 import ru.smartexpress.courierapp.request.DeliverOrderRequest;
@@ -82,6 +84,8 @@ public class OrderActivity extends UpdatableActivity implements View.OnClickList
     }
 
     private void updateUI(){
+        if(orderDTO == null)
+            finish();
         sourceAddress.setText(orderDTO.getSourceAddress());
         destinationAddress.setText(orderDTO.getDestinationAddress());
         pickUpDeadline.setText(dateFormat.format(new Date(orderDTO.getPickUpDeadline())));
@@ -135,6 +139,11 @@ public class OrderActivity extends UpdatableActivity implements View.OnClickList
                     orderDTO.setStatus(OrderTaskStatus.PICKED_UP.name());
                     setUIStatus(orderDTO.getStatus());
                     orderDAO.updateOrderStatus(orderDTO.getId(), OrderTaskStatus.PICKED_UP);
+                    Intent intent = new Intent(OrderActivity.this, MainActivity.class);
+                    intent.putExtra(MainActivity.TAB_INDEX, 1);
+                    startActivity(intent);
+                    Toast.makeText(SeApplication.app(), getString(R.string.updated_ok), Toast.LENGTH_LONG);
+                    finish();
 
                 }
             });
@@ -145,11 +154,12 @@ public class OrderActivity extends UpdatableActivity implements View.OnClickList
             spiceManager.execute(request, new SimpleRequestListener(this) {
                 @Override
                 public void onRequestSuccess(Object o) {
-                    orderDAO.updateOrderStatus(orderDTO.getId(), OrderTaskStatus.DONE);
+                    orderDAO.deleteOrder(orderDTO.getId());
                     Intent intent = new Intent(OrderActivity.this, MainActivity.class);
-                    intent.putExtra(MainActivity.TAB_INDEX, 2);
+                    intent.putExtra(MainActivity.TAB_INDEX, 1);
                     startActivity(intent);
-                    OrderActivity.this.finish();
+                    Toast.makeText(SeApplication.app(), getString(R.string.done_ok), Toast.LENGTH_LONG);
+                    finish();
                 }
             });
         }

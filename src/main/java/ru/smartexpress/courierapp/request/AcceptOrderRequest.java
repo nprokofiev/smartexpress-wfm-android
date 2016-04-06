@@ -12,7 +12,7 @@ import java.net.URI;
  * @author <a href="mailto:nprokofiev@gmail.com">Nikolay Prokofiev</a>
  * @date 26.01.15 3:41
  */
-public class AcceptOrderRequest extends SpringAndroidSpiceRequest<OrderDTO> {
+public class AcceptOrderRequest extends AbstractSpringAndroidRequest<OrderDTO> {
 
     private long orderId;
 
@@ -23,7 +23,7 @@ public class AcceptOrderRequest extends SpringAndroidSpiceRequest<OrderDTO> {
 
     @Override
     public OrderDTO loadDataFromNetwork() throws Exception {
-        String url = CommonConstants.REST_URL+"/courier/acceptOrder?orderId="+orderId;
+        String url = baseUrl+"/courier/acceptOrder?orderId="+orderId;
         return getRestTemplate().postForObject(url,null,  OrderDTO.class);
 
 

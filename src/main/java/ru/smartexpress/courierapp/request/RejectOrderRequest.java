@@ -11,7 +11,7 @@ import java.net.URI;
  * @author <a href="mailto:nprokofiev@gmail.com">Nikolay Prokofiev</a>
  * @date 26.01.15 4:12
  */
-public class RejectOrderRequest extends SpringAndroidSpiceRequest{
+public class RejectOrderRequest extends AbstractSpringAndroidRequest{
     private long orderId;
 
     public RejectOrderRequest(long orderId) {
@@ -21,7 +21,7 @@ public class RejectOrderRequest extends SpringAndroidSpiceRequest{
 
     @Override
     public Object loadDataFromNetwork() throws Exception {
-        String url = CommonConstants.REST_URL+"/courier/rejectOrder?orderId="+orderId;
+        String url = baseUrl+"/courier/rejectOrder?orderId="+orderId;
         getRestTemplate().headForHeaders(new URI(url));
         return null;
 

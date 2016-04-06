@@ -9,7 +9,7 @@ import ru.smartexpress.courierapp.CommonConstants;
  * @author <a href="mailto:nprokofiev@gmail.com">Nikolay Prokofiev</a>
  * @date 04.03.15 7:27
  */
-public class PickUpOrderRequest extends SpringAndroidSpiceRequest {
+public class PickUpOrderRequest extends AbstractSpringAndroidRequest {
 
     private long orderId;
 
@@ -20,7 +20,7 @@ public class PickUpOrderRequest extends SpringAndroidSpiceRequest {
 
     @Override
     public Object loadDataFromNetwork() throws Exception {
-        String url = CommonConstants.REST_URL+"/courier/pickUp?orderId="+orderId;
+        String url = baseUrl+"/courier/pickUp?orderId="+orderId;
         getRestTemplate().getForObject(url, Object.class);
         return null;
     }

@@ -30,6 +30,8 @@ public abstract class AbstractOrderNotificationHandler implements NotificationHa
 
     protected NotificationManager mNotificationManager;
 
+    public static final int NOTIFICATION_ID = 112;
+
     public AbstractOrderNotificationHandler(Context context, SpiceManager spiceManager) {
         this.context = context;
         orderDAO = new OrderDAO(context);
@@ -49,7 +51,7 @@ public abstract class AbstractOrderNotificationHandler implements NotificationHa
         Uri uri= RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
         NotificationCompat.Builder mBuilder =
                 new NotificationCompat.Builder(context)
-                        .setSmallIcon(R.drawable.ic_launcher)
+                        .setSmallIcon(R.drawable.ic_favorite_selected_24dp)
                         .setVibrate(new long[] { 1000, 1000, 1000, 1000, 1000 })
                         .setLights(Color.RED, 3000, 3000)
                         .setSound(uri)
@@ -60,6 +62,6 @@ public abstract class AbstractOrderNotificationHandler implements NotificationHa
                         .setContentText(text);
 
         mBuilder.setContentIntent(contentIntent);
-        mNotificationManager.notify(notificationId, mBuilder.build());
+        mNotificationManager.notify(NOTIFICATION_ID, mBuilder.build());
     }
 }

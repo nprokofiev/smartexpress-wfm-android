@@ -14,6 +14,7 @@ import com.octo.android.robospice.request.listener.RequestListener;
 import ru.smartexpress.common.status.OrderTaskStatus;
 import ru.smartexpress.common.dto.OrderDTO;
 import ru.smartexpress.courierapp.R;
+import ru.smartexpress.courierapp.core.SeUser;
 import ru.smartexpress.courierapp.order.OrderDAO;
 import ru.smartexpress.courierapp.request.AcceptOrderRequest;
 import ru.smartexpress.courierapp.request.RejectOrderRequest;
@@ -69,12 +70,7 @@ public class NewOrderActivity extends UpdatableActivity {
     }
 
     private void checkAuth(){
-        SharedPreferences preferences = getSharedPreferences(LoginActivity.LOGIN_PREFS, 0);
-        if(!preferences.contains("username")){
-            Intent intent = new Intent(this, LoginActivity.class);
-            startActivity(intent);
-            finish();
-        }
+
     }
 
 

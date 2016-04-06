@@ -1,7 +1,40 @@
 package ru.smartexpress.courierapp.activity;
 
-import android.app.Activity;
-import android.app.TabActivity;
+import android.annotation.TargetApi;
+import android.app.NotificationManager;
+import android.content.*;
+import android.location.LocationManager;
+import android.os.Build;
+import android.os.Bundle;
+import android.os.IBinder;
+import android.support.annotation.Nullable;
+import android.support.design.widget.TabLayout;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.content.LocalBroadcastManager;
+import android.support.v4.view.ViewPager;
+import android.support.v7.app.AlertDialog;
+import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
+import android.view.*;
+import android.widget.ImageView;
+import android.widget.TextView;
+import com.octo.android.robospice.SpiceManager;
+import com.octo.android.robospice.persistence.exception.SpiceException;
+import com.octo.android.robospice.request.listener.RequestListener;
+import ru.smartexpress.common.status.CourierStatus;
+import ru.smartexpress.courierapp.R;
+import ru.smartexpress.courierapp.core.Logger;
+import ru.smartexpress.courierapp.core.SeUser;
+import ru.smartexpress.courierapp.core.SmartExpress;
+import ru.smartexpress.courierapp.helper.SystemHelper;
+import ru.smartexpress.courierapp.service.JsonSpiceService;
+import ru.smartexpress.courierapp.service.LocationService;
+import ru.smartexpress.courierapp.service.notification.AbstractOrderNotificationHandler;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * courier-android
@@ -9,33 +42,9 @@ import android.app.TabActivity;
  * @author <a href="mailto:nprokofiev@gmail.com">Nikolay Prokofiev</a>
  * @date 10.03.15 16:30
  */
-import android.app.ActionBar;
-import android.app.FragmentTransaction;
-import android.content.*;
-import android.os.Bundle;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.view.ViewPager;
-import android.util.Log;
-import android.view.*;
-import android.widget.PopupMenu;
-import android.widget.TextView;
-import com.octo.android.robospice.SpiceManager;
-import ru.smartexpress.common.status.CourierStatus;
-import ru.smartexpress.courierapp.R;
-import ru.smartexpress.courierapp.helper.AuthHelper;
-import ru.smartexpress.courierapp.helper.SystemHelper;
-import ru.smartexpress.courierapp.request.ChangeCourierStatusRequest;
-import ru.smartexpress.courierapp.request.SimpleRequestListener;
-import ru.smartexpress.courierapp.service.JsonSpiceService;
-import ru.smartexpress.courierapp.service.LocationService;
 
-import java.util.ArrayList;
-import java.util.List;
-
-public class MainActivity extends FragmentActivity implements ActionBar.TabListener {
+@TargetApi(Build.VERSION_CODES.HONEYCOMB)
+public class MainActivity extends AppCompatActivity {
 
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide fragments for each of the
@@ -48,75 +57,87 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
      * The {@link ViewPager} that will display the three primary sections of the app, one at a
      * time.
      */
-    ViewPager mViewPager;
+
+    private TabLayout mTabLayout;
+
+
+
+
 
     private Menu menu;
 
+
     private SpiceManager spiceManager = new SpiceManager(JsonSpiceService.class);
 
+    private LocationService locationService;
+
+    private boolean mIsBound;
 
     public static final String TAB_INDEX = "tabIndex";
     public static final String UPDATE_CONTENT_ACTION = "updateContentAction";
     private BroadcastReceiver updateReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-             mAppSectionsPagerAdapter.update();
+            String action = intent.getAction();
+            Logger.info("got intent"+action);
+            mAppSectionsPagerAdapter.update();
+
+
         }
     };
 
 
-    public void onCreate(Bundle savedInstanceState) {
+    @Override
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if(!SystemHelper.isMyServiceRunning(LocationService.class, this)) {
-            Intent intent = new Intent(this, LocationService.class);
-            startService(intent);
+        if(updateReceiver!=null){
+            LocalBroadcastManager broadcastManager = LocalBroadcastManager.getInstance(this);
+            IntentFilter intentFilter = new IntentFilter(UPDATE_CONTENT_ACTION);
+            broadcastManager.registerReceiver(updateReceiver, intentFilter);
         }
+
+        if (SeUser.current()==null){
+            startLoginScreen();
+            return;
+        }
+
+
+
 
         setContentView(R.layout.main_view);
 
-        // Create the adapter that will return a fragment for each of the three primary sections
-        // of the app.
+        // Setup the viewPager
+        ViewPager viewPager = (ViewPager) findViewById(R.id.pager);
         mAppSectionsPagerAdapter = new AppSectionsPagerAdapter(getSupportFragmentManager());
         mAppSectionsPagerAdapter.add(new CourierSearchOrderFragment());
         mAppSectionsPagerAdapter.add(new ActiveOrdersFragment());
         mAppSectionsPagerAdapter.add(new HistoryOrdersFragment());
-        // Set up the action bar.
-        final ActionBar actionBar = getActionBar();
 
-        // Specify that the Home/Up button should not be enabled, since there is no hierarchical
-        // parent.
-        actionBar.setHomeButtonEnabled(false);
+        viewPager.setAdapter(mAppSectionsPagerAdapter);
 
-        // Specify that we will be displaying tabs in the action bar.
-        actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
+        mTabLayout = (TabLayout) findViewById(R.id.tab_layout);
+        mTabLayout.setupWithViewPager(viewPager);
 
-        // Set up the ViewPager, attaching the adapter and setting up a listener for when the
-        // user swipes between sections.
-        mViewPager = (ViewPager) findViewById(R.id.pager);
-        mViewPager.setAdapter(mAppSectionsPagerAdapter);
-        mViewPager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
-            @Override
-            public void onPageSelected(int position) {
-                // When swiping between different app sections, select the corresponding tab.
-                // We can also use ActionBar.Tab#select() to do this if we have a reference to the
-                // Tab.
-                actionBar.setSelectedNavigationItem(position);
-            }
-        });
-        // For each of the sections in the app, add a tab to the action bar.
-        for (int i = 0; i < mAppSectionsPagerAdapter.getCount(); i++) {
-            // Create a tab with text corresponding to the page title defined by the adapter.
-            // Also specify this Activity object, which implements the TabListener interface, as the
-            // listener for when this tab is selected.
-            actionBar.addTab(
-                    actionBar.newTab()
-                            .setText(mAppSectionsPagerAdapter.getPageTitle(i))
-                            .setTabListener(this));
+        for (int i = 0; i < mTabLayout.getTabCount(); i++) {
+            Logger.info("iterating over item#"+i);
+            TabLayout.Tab tab = mTabLayout.getTabAt(i);
+            tab.setCustomView(mAppSectionsPagerAdapter.getTabView(i));
         }
-        if(updateReceiver!=null){
-            IntentFilter intentFilter = new IntentFilter(UPDATE_CONTENT_ACTION);
-            registerReceiver(updateReceiver, intentFilter);
-        }
+
+        mTabLayout.getTabAt(0).getCustomView().setSelected(true);
+
+        ensureServices();
+        doBindService();
+
+    }
+
+
+
+    private void startLoginScreen(){
+        Intent intent = new Intent(this,LoginActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(intent);
+        finish();
     }
 
     @Override
@@ -124,7 +145,12 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
         super.onNewIntent(intent);
         int tabIndex = intent.getIntExtra(TAB_INDEX, 0);
         Log.i(getClass().getName(), "tabIndex from intent:"+tabIndex);
-        mViewPager.setCurrentItem(tabIndex);
+        int pos = mTabLayout.getSelectedTabPosition();
+        mTabLayout.getTabAt(pos).getCustomView().setSelected(false);
+        mTabLayout.getTabAt(tabIndex).getCustomView().setSelected(true);
+        ViewPager viewPager = (ViewPager) findViewById(R.id.pager);
+        viewPager.setCurrentItem(tabIndex);
+
     }
 
 
@@ -140,29 +166,16 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
     @Override
     protected void onResume() {
         super.onResume();
-        if(!AuthHelper.isLoggedIn(this))
-            AuthHelper.forceLogout(this);
-    }
-
-    @Override
-    public void onTabUnselected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
-    }
-
-    @Override
-    public void onTabSelected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
-        // When the given tab is selected, switch to the corresponding page in the ViewPager.
-        mViewPager.setCurrentItem(tab.getPosition());
-    }
-
-    @Override
-    public void onTabReselected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
+        ensureServices();
+       /* if(!AuthHelper.isLoggedIn(this))
+            AuthHelper.forceLogout(this);*/
     }
 
     /**
      * A {@link FragmentPagerAdapter} that returns a fragment corresponding to one of the primary
      * sections of the app.
      */
-    public static class AppSectionsPagerAdapter extends FragmentPagerAdapter {
+    public class AppSectionsPagerAdapter extends FragmentPagerAdapter {
         private List<MainActivityFragment> fragments = new ArrayList<MainActivityFragment>();
         public AppSectionsPagerAdapter(FragmentManager fm) {
             super(fm);
@@ -188,7 +201,18 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
             return fragments.get(position).getTitle();
         }
 
+        public View getTabView(int position) {
+            View view = LayoutInflater.from(MainActivity.this).inflate(R.layout.custom_tab, null);
+            TextView title = (TextView) view.findViewById(R.id.title);
+            title.setText(fragments.get(position).getTitle());
+            ImageView icon = (ImageView) view.findViewById(R.id.icon);
+            icon.setImageResource(fragments.get(position).getImageResource());
+            return view;
+        }
+
         public void add(MainActivityFragment fragment){
+
+
             fragments.add(fragment);
         }
     }
@@ -196,8 +220,11 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if(updateReceiver!=null)
-            unregisterReceiver(updateReceiver);
+        doUnbindService();
+        if(updateReceiver!=null ) {
+            LocalBroadcastManager broadcastManager = LocalBroadcastManager.getInstance(this);
+            broadcastManager.unregisterReceiver(updateReceiver);
+        }
         if(spiceManager.isStarted())
             spiceManager.shouldStop();
     }
@@ -209,6 +236,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.main_activity_actions, menu);
         this.menu = menu;
+        checkUserStatus();
         //inflater.inflate(R.menu.top_menu, menu);
         return true;
     }
@@ -232,41 +260,110 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
         }
     }
 
+
+
+    private void checkUserStatus(){
+        SeUser user = SeUser.current();
+        Logger.info("current user status is"+user.getStatus());
+        if(menu==null)
+            return;
+        final MenuItem item = menu.findItem(R.id.statusMenu);
+        if(CourierStatus.ONLINE.toString().equals(user.getStatus())){
+            Logger.info("setting ui status to online");
+            item.setIcon(R.drawable.status_online);
+        }
+        else {
+            Logger.info("setting ui status to offline");
+            item.setIcon(R.drawable.status_offline);
+        }
+
+    }
+
     public void makeMeOffline(){
-        MenuItem item = menu.findItem(R.id.statusMenu);
-        item.setIcon(R.drawable.status_offline);
-        spiceManager.execute(new ChangeCourierStatusRequest(CourierStatus.OFFLINE.name()), new SimpleRequestListener(this) {
-            @Override
-            public void onRequestSuccess(Object o) {
-                Log.i("Main", "courier offline");
-            }
-        });
+        SeUser.current().goOffline(this);
+        menu.findItem(R.id.statusMenu).setIcon(R.drawable.status_offline);
     }
 
     public void makeMeOnline(){
-        MenuItem item = menu.findItem(R.id.statusMenu);
-        item.setIcon(R.drawable.status_online);
-        spiceManager.execute(new ChangeCourierStatusRequest(CourierStatus.ONLINE.name()), new SimpleRequestListener(this) {
-            @Override
-            public void onRequestSuccess(Object o) {
-                Log.i("Main", "courier online");
-            }
-        });
+        SeUser.current().goOnline(this);
+        menu.findItem(R.id.statusMenu).setIcon(R.drawable.status_online);
+
     }
 
     public void logout(){
-        makeMeOffline();
-        Intent intent = new Intent(this, LoginActivity.class);
-        SharedPreferences preferences = getSharedPreferences(LoginActivity.LOGIN_PREFS, 0);
-        intent.putExtra("username", preferences.getString("username", null));
-        intent.putExtra("password", preferences.getString("password", null));
-        SharedPreferences.Editor editor = preferences.edit();
-        editor.clear();
-        editor.commit();
+        SeUser.current().goOffline(this);
+        SeUser.current().logout();
+        Intent intent = new Intent(MainActivity.this, LoginActivity.class);
         startActivity(intent);
-        Intent locationService = new Intent(this, LocationService.class);
-        stopService(locationService);
         finish();
+    }
+
+    private void ensureServices(){
+        checkUserStatus();
+        checkGps();
+        SmartExpress.checkServices();
+    }
+
+    private void checkGps() {
+        final LocationManager manager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        if (!manager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+            buildAlertMessageNoGps();
+        }
+    }
+
+    private void buildAlertMessageNoGps() {
+        final AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage("Your GPS seems to be disabled, do you want to enable it?")
+                .setCancelable(false)
+                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    public void onClick(@SuppressWarnings("unused") final DialogInterface dialog, @SuppressWarnings("unused") final int id) {
+                        startActivity(new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS));
+                    }
+                })
+                .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                    public void onClick(final DialogInterface dialog, @SuppressWarnings("unused") final int id) {
+                        dialog.cancel();
+                    }
+                });
+        final AlertDialog alert = builder.create();
+        alert.show();
+    }
+
+    private ServiceConnection mConnection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName componentName, IBinder iBinder)
+        {
+            Logger.info("Connected to location service");
+            locationService = ((LocationService.LocalBinder)iBinder).getInstance();
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName componentName)
+        {
+            Logger.info("Disconnected from location service");
+            locationService = null;
+        }
+    };
+
+    private void doBindService()
+    {
+        // Establish a connection with the service.  We use an explicit
+        // class name because we want a specific service implementation that
+        // we know will be running in our own process (and thus won't be
+        // supporting component replacement by other applications).
+        bindService(new Intent(this,
+                LocationService.class), mConnection, 0);
+        mIsBound = true;
+    }
+
+    private void doUnbindService()
+    {
+        if (mIsBound)
+        {
+            // Detach our existing connection.
+            unbindService(mConnection);
+            mIsBound = false;
+        }
     }
 
 }

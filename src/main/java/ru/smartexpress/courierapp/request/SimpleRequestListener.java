@@ -2,17 +2,12 @@ package ru.smartexpress.courierapp.request;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
 import com.octo.android.robospice.exception.NetworkException;
 import com.octo.android.robospice.persistence.exception.SpiceException;
 import com.octo.android.robospice.request.listener.RequestListener;
-import org.codehaus.jackson.map.ObjectMapper;
 import ru.smartexpress.common.dto.Error;
-import ru.smartexpress.courierapp.activity.LoginActivity;
 import ru.smartexpress.courierapp.helper.AuthHelper;
-import ru.smartexpress.courierapp.helper.SystemHelper;
 import ru.smartexpress.courierapp.service.rest.SeeHttpServerErrorException;
 
 /**
@@ -23,8 +18,6 @@ import ru.smartexpress.courierapp.service.rest.SeeHttpServerErrorException;
  */
 public abstract class SimpleRequestListener<T> implements RequestListener<T> {
     private Activity context;
-
-    private ObjectMapper objectMapper = new ObjectMapper();
 
     protected SimpleRequestListener(Activity context) {
         this.context = context;

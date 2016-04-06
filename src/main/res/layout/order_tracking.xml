@@ -139,7 +139,6 @@
         android:id="@+id/orderTrackingFooter"
         android:layout_alignParentBottom="true"
         android:gravity="center"
-        android:background="#000000"
         >
         <Button
             android:layout_width="wrap_content"

@@ -7,6 +7,7 @@ import com.octo.android.robospice.persistence.exception.SpiceException;
 import com.octo.android.robospice.request.listener.RequestListener;
 import ru.smartexpress.common.dto.MobileMessageDTO;
 import ru.smartexpress.common.dto.MobileMessageList;
+import ru.smartexpress.courierapp.core.Logger;
 import ru.smartexpress.courierapp.helper.SystemHelper;
 import ru.smartexpress.courierapp.order.UserDAO;
 import ru.smartexpress.courierapp.request.PendingMessagesRequest;
@@ -55,26 +56,26 @@ public class NotificationProcessor implements RequestListener<MobileMessageList>
 
     @Override
     public void onRequestFailure(SpiceException spiceException) {
-        Log.e(TAG, "error obtaining messages", spiceException);
+        Logger.error(spiceException, "error obtaining messages");
     }
 
     @Override
     public void onRequestSuccess(MobileMessageList mobileMessageDTOs) {
-        Log.i(TAG, "messages loaded:"+mobileMessageDTOs.toString());
+        Logger.info("messages loaded:"+mobileMessageDTOs.toString());
         Long offsetId=null;
         for (MobileMessageDTO messageDTO : mobileMessageDTOs) {
             offsetId = messageDTO.getId();
             handleMessage(messageDTO);
         }
         if(offsetId!=null) {
-            UserDAO.setLastMessageOffset(context, offsetId);
+        //    UserDAO.setLastMessageOffset(context, offsetId);
             SystemHelper.sendUpdateUI(context);
         }
     }
 
     public void processPendingMessages(){
-        long offsetId = UserDAO.getLastMessageOffset(context);
-        spiceManager.execute(new PendingMessagesRequest(offsetId), this);
+      //  long offsetId = UserDAO.getLastMessageOffset(context);
+        spiceManager.execute(new PendingMessagesRequest(), this);
 
     }
 
@@ -84,7 +85,7 @@ public class NotificationProcessor implements RequestListener<MobileMessageList>
         String type = messageDTO.getType();
         for (NotificationHandler handler : handlers) {
             if (handler.getType().equals(type)) {
-                Log.i(TAG, "handling bestBefore for "+messageDTO.toString());
+                Logger.info("handling bestBefore for "+messageDTO.toString());
                 handler.afterBestBefore(messageDTO);
                 return;
             }
@@ -102,6 +103,6 @@ public class NotificationProcessor implements RequestListener<MobileMessageList>
                 return;
             }
         }
-        Log.e(TAG, "no notification handler found for "+type);
+        Logger.error("no notification handler found for " + type);
     }
 }

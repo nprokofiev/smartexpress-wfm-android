@@ -54,6 +54,12 @@ public class OrderDAO {
         database.delete(OrderFields.TABLE_NAME, whereOrderId, whereArgs);
     }
 
+    public void clearAllOrders(){
+        SQLiteDatabase database = dbHelper.getWritableDatabase();
+        database.delete(OrderFields.TABLE_NAME, "", new String[0]);
+
+    }
+
     public int countCourierSearchOrders(){
          Cursor cursor = getCursorByStatus(OrderTaskStatus.COURIER_SEARCH.name());
         return cursor.getCount();

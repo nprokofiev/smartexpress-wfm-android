@@ -12,4 +12,5 @@ public interface MainActivityFragment {
     String getTitle();
     Fragment getFragment();
     void update();
+    int getImageResource();
 }

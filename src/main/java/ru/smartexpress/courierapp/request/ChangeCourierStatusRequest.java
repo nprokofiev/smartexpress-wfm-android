@@ -1,6 +1,7 @@
 package ru.smartexpress.courierapp.request;
 
 import com.octo.android.robospice.request.springandroid.SpringAndroidSpiceRequest;
+import ru.smartexpress.common.status.CourierStatus;
 import ru.smartexpress.courierapp.CommonConstants;
 
 /**
@@ -9,17 +10,17 @@ import ru.smartexpress.courierapp.CommonConstants;
  * @author <a href="mailto:nprokofiev@gmail.com">Nikolay Prokofiev</a>
  * @date 15.04.15 6:53
  */
-public class ChangeCourierStatusRequest extends SpringAndroidSpiceRequest {
-    private String status;
-    public ChangeCourierStatusRequest(String status) {
-        super(Object.class);
+public class ChangeCourierStatusRequest extends AbstractSpringAndroidRequest<Void> {
+    private CourierStatus status;
+    public ChangeCourierStatusRequest(CourierStatus status) {
+        super(Void.class);
         this.status = status;
     }
 
     @Override
-    public Object loadDataFromNetwork() throws Exception {
-        String url = CommonConstants.REST_URL+"/courier/updateCourierStatus?status="+status;
-        getRestTemplate().getForObject(url, Object.class);
+    public Void loadDataFromNetwork() throws Exception {
+        String url = baseUrl+"/courier/updateCourierStatus";
+        getRestTemplate().put(url, status);
         return null;
     }
 }

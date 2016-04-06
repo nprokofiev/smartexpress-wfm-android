@@ -1,6 +1,10 @@
 package ru.smartexpress.courierapp.order;
 
+import android.content.Context;
+import android.content.Intent;
+import android.support.v4.content.LocalBroadcastManager;
 import ru.smartexpress.common.dto.OrderDTO;
+import ru.smartexpress.courierapp.activity.MainActivity;
 
 import java.util.Date;
 
@@ -18,5 +22,12 @@ public class OrderHelper {
     public static String getNamePhone(String name, String phone){
          return String.format("%s тел. %s ", name, phone);
 
+    }
+
+    public static void updateContent(Context context){
+        LocalBroadcastManager broadcastManager = LocalBroadcastManager.getInstance(context);
+        Intent contentUpdate = new Intent();
+        contentUpdate.setAction(MainActivity.UPDATE_CONTENT_ACTION);
+        broadcastManager.sendBroadcast(contentUpdate);
     }
 }

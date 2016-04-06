@@ -13,7 +13,7 @@ import java.util.List;
  * @author <a href="mailto:nprokofiev@gmail.com">Nikolay Prokofiev</a>
  * @date 05.03.15 8:48
  */
-public class ConfirmedOrdersRequest extends SpringAndroidSpiceRequest<OrderList> {
+public class ConfirmedOrdersRequest extends AbstractSpringAndroidRequest<OrderList> {
 
     public ConfirmedOrdersRequest() {
         super(OrderList.class);
@@ -21,7 +21,7 @@ public class ConfirmedOrdersRequest extends SpringAndroidSpiceRequest<OrderList>
 
     @Override
     public OrderList loadDataFromNetwork() throws Exception {
-        String url = CommonConstants.REST_URL+"/courier/getConfirmedOrders";
+        String url = baseUrl+"/courier/getConfirmedOrders";
         return getRestTemplate().getForObject(url, OrderList.class);
     }
 }

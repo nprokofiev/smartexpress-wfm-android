@@ -1,7 +1,8 @@
 package ru.smartexpress.courierapp.service.rest;
 
-import org.codehaus.jackson.map.DeserializationConfig;
-import org.codehaus.jackson.map.ObjectMapper;
+
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.client.HttpServerErrorException;
 import ru.smartexpress.common.dto.Error;
@@ -19,7 +20,7 @@ public class SeeHttpServerErrorException extends HttpServerErrorException {
     private ObjectMapper objectMapper = new ObjectMapper();
 
     {
-        objectMapper.configure(DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
     }
 
     public SeeHttpServerErrorException(HttpStatus statusCode) {

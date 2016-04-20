@@ -7,6 +7,7 @@ import ru.smartexpress.common.NotificationType;
 import ru.smartexpress.common.status.OrderTaskStatus;
 import ru.smartexpress.common.dto.MobileMessageDTO;
 import ru.smartexpress.common.dto.OrderDTO;
+import ru.smartexpress.courierapp.R;
 import ru.smartexpress.courierapp.activity.MainActivity;
 import ru.smartexpress.courierapp.helper.SystemHelper;
 import ru.smartexpress.courierapp.order.OrderHelper;
@@ -57,12 +58,12 @@ public class NewOrderNotificationHandler extends AbstractOrderNotificationHandle
         intent.putExtra(MainActivity.TAB_INDEX, 0);
 
 
-        String title = "Вам предлагают заказ";
+        String title = context.getString(R.string.new_order_offered);
         String address;
         if(newOrderCount == 1)
             address = OrderHelper.getShortDescription(orderDTO);
         else
-            address = String.format("Поступило %d новых заказа", newOrderCount);
+            address = context.getString(R.string.new_orders_pending, newOrderCount);
         pingNotify(title, address, NEW_ORDER_NOTIFICATION_ID, intent);
     }
 

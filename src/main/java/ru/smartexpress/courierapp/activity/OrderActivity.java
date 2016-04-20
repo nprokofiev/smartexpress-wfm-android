@@ -5,6 +5,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.method.LinkMovementMethod;
 import android.view.View;
 import android.widget.Button;
 import android.widget.RelativeLayout;
@@ -45,7 +46,7 @@ public class OrderActivity extends UpdatableActivity implements View.OnClickList
     private TextView cost;
     private RelativeLayout footerLayout;
     DateFormat dateFormat = DateFormat.getDateTimeInstance();
-    private OrderDTO orderDTO;
+
     SpiceManager spiceManager = new SpiceManager(JsonSpiceService.class);
     public static final String ORDER_DTO= "orderDTO";
     private OrderDAO orderDAO;
@@ -58,7 +59,9 @@ public class OrderActivity extends UpdatableActivity implements View.OnClickList
         accept = (Button)findViewById(R.id.changeOrderStatus);
         accept.setOnClickListener(this);
         sourceAddress = (TextView)findViewById(R.id.sourceAddress);
+        sourceAddress.setMovementMethod(LinkMovementMethod.getInstance());
         destinationAddress = (TextView)findViewById(R.id.destinationAddress);
+        destinationAddress.setMovementMethod(LinkMovementMethod.getInstance());
         pickUpDeadline = (TextView)findViewById(R.id.pickUpDeadline);
         deadline = (TextView)findViewById(R.id.deliveryDeadline);
         partnerName = (TextView)findViewById(R.id.partnerName);
@@ -86,8 +89,8 @@ public class OrderActivity extends UpdatableActivity implements View.OnClickList
     private void updateUI(){
         if(orderDTO == null)
             finish();
-        sourceAddress.setText(orderDTO.getSourceAddress());
-        destinationAddress.setText(orderDTO.getDestinationAddress());
+        sourceAddress.setText(getUrlNavigationForAddress(orderDTO.getSourceAddress()));
+        destinationAddress.setText(getUrlNavigationForAddress(orderDTO.getDestinationAddress()));
         pickUpDeadline.setText(dateFormat.format(new Date(orderDTO.getPickUpDeadline())));
         deadline.setText(dateFormat.format(new Date(orderDTO.getDeadline())));
         partnerName.setText(OrderHelper.getNamePhone(orderDTO.getPartnerName(), orderDTO.getPartnerPhone()));
@@ -97,6 +100,8 @@ public class OrderActivity extends UpdatableActivity implements View.OnClickList
 
 
     }
+
+
 
     @Override
     public void onUpdateReceived() {

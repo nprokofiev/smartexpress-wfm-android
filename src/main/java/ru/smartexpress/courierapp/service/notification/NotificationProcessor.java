@@ -51,6 +51,7 @@ public class NotificationProcessor implements RequestListener<MobileMessageList>
         handlers.add(new NewOrderNotificationHandler(context, spiceManager));
         handlers.add(new OrderAssignedNotificationHandler(context, spiceManager));
         handlers.add(new OrderUpdatedNotificationHandler(context, spiceManager));
+        handlers.add(new OrderDeleteNotificationHandler(context, spiceManager));
         spiceManager.start(context);
     }
 

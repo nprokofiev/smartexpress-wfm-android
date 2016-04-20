@@ -27,7 +27,7 @@ public class RegistrationFragment extends Fragment implements View.OnClickListen
     private EditText mPhone;
     private EditText mPassword;
     private EditText mConfirmPassword;
-
+    private EditText mActivationCode;
 
 
     @Override
@@ -41,6 +41,7 @@ public class RegistrationFragment extends Fragment implements View.OnClickListen
     //    name2field.put("password", password);
         mConfirmPassword = (EditText)getActivity().findViewById(R.id.confirmPasswordEditText);
 
+        mActivationCode = (EditText)getActivity().findViewById(R.id.activationCodeEditText);
 
         Button register = (Button)getActivity().findViewById(R.id.registerButton);
         register.setOnClickListener(this);
@@ -68,6 +69,7 @@ public class RegistrationFragment extends Fragment implements View.OnClickListen
         String password = mPassword.getText().toString();
         String confirmPassword = mConfirmPassword.getText().toString();
         String name = mName.getText().toString();
+        String activationCode = mActivationCode.getText().toString();
 
         boolean cancel = false;
         View focusView = null;
@@ -90,6 +92,12 @@ public class RegistrationFragment extends Fragment implements View.OnClickListen
             cancel = true;
         }
 
+        if (TextUtils.isEmpty(activationCode)) {
+            mActivationCode.setError(getString(R.string.must_not_be_empty));
+            focusView = mActivationCode;
+            cancel = true;
+        }
+
         if (TextUtils.isEmpty(phone) && ! ValidationHelper.isPhoneValid(phone)){
             mPhone.setError(getString(R.string.error_phone_not_valid));
             focusView = mPhone;
@@ -104,7 +112,7 @@ public class RegistrationFragment extends Fragment implements View.OnClickListen
                     .setPhone(phone)
                     .setPassword(password)
                     .setName(name)
-                    .register(activity);
+                    .register(activity, activationCode);
         }
     }
 

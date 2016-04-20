@@ -6,6 +6,7 @@ import com.octo.android.robospice.SpiceManager;
 import ru.smartexpress.common.NotificationType;
 import ru.smartexpress.common.dto.MobileMessageDTO;
 import ru.smartexpress.common.dto.OrderDTO;
+import ru.smartexpress.courierapp.R;
 import ru.smartexpress.courierapp.activity.OrderActivity;
 import ru.smartexpress.courierapp.order.OrderHelper;
 
@@ -32,6 +33,6 @@ public class OrderAssignedNotificationHandler extends AbstractOrderNotificationH
         orderDAO.saveOrder(orderDTO);
         Intent intent = new Intent(context, OrderActivity.class);
         intent.putExtra(OrderActivity.ORDER_DTO, orderDTO);
-        pingNotify("На Вас назначен заказ", OrderHelper.getShortDescription(orderDTO), extras.getId().intValue(), intent);
+        pingNotify(context.getString(R.string.order_assigned_to_you), OrderHelper.getShortDescription(orderDTO), extras.getId().intValue(), intent);
     }
 }

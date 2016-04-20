@@ -16,6 +16,7 @@ import ru.smartexpress.common.dto.OrderDTO;
 import ru.smartexpress.courierapp.R;
 import ru.smartexpress.courierapp.core.SeUser;
 import ru.smartexpress.courierapp.order.OrderDAO;
+import ru.smartexpress.courierapp.order.OrderHelper;
 import ru.smartexpress.courierapp.request.AcceptOrderRequest;
 import ru.smartexpress.courierapp.request.RejectOrderRequest;
 import ru.smartexpress.courierapp.request.SimpleRequestListener;
@@ -113,8 +114,8 @@ public class NewOrderActivity extends UpdatableActivity {
     public void fillText(Intent intent){
         OrderDTO orderDTO = (OrderDTO)intent.getSerializableExtra(OrderActivity.ORDER_DTO);
 
-        sourceAddress.setText(orderDTO.getSourceAddress());
-        destinationAddress.setText(orderDTO.getDestinationAddress());
+        sourceAddress.setText(OrderHelper.getFullAddress(orderDTO.getSourceAddress()));
+        destinationAddress.setText(OrderHelper.getFullAddress(orderDTO.getDestinationAddress()));
             pickUpDeadline.setText(dateFormat.format(new Date(Long.valueOf(orderDTO.getPickUpDeadline()))));
             deadline.setText(dateFormat.format(new Date(Long.valueOf(orderDTO.getDeadline()))));
 

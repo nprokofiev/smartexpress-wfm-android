@@ -15,14 +15,16 @@ public class CommonConstants {
 
 
  public static final String PROD_HOST = "api.smartexpress.ru";
+ public static final String UAT_HOST = "uat.smartexpress.ru";
  public static final int PROD_PORT = 80;
 // public static final String REST_URL = "http://api.smartexpress.ru/se/rest"; //
 
  public static final String REGISTRATION_ID_KEY="registrationId";
 
- public static final String DEV_SENDER_ID = "282638509466";
+ public static final String DEV_SENDER_ID = "892432196604";
     public static final String PROJECT_ID = "smartexpress-prod";
-    public static final String PROD_SENDER_ID="282638509466";
+    public static final String PROD_SENDER_ID="261100226979";
+    public static final String UAT_SENDER_ID="282638509466";
 
 
 

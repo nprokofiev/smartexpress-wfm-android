@@ -17,8 +17,16 @@ public class DBHelper extends SQLiteOpenHelper {
     private static final String TABLE_CREATE =
             "CREATE TABLE "+OrderFields.TABLE_NAME+" (" +
                     OrderFields.ID + " INTEGER PRIMARY KEY, " +
-                    OrderFields.SOURCE_ADDRESS + " TEXT, " +
-                    OrderFields.DESTINATION_ADDRESS + " TEXT, " +
+                    OrderFields.SOURCE_ADDRESS_FIRST_LINE + " TEXT, " +
+                    OrderFields.SOURCE_ADDRESS_SECOND_LINE + " TEXT, " +
+                    OrderFields.SOURCE_ADDRESS_LAT + " REAL, " +
+                    OrderFields.SOURCE_ADDRESS_LNG + " REAL, " +
+
+                    OrderFields.DESTINATION_ADDRESS_FIRST_LINE + " TEXT, " +
+                    OrderFields.DESTINATION_ADDRESS_SECOND_LINE + " TEXT, " +
+                    OrderFields.DESTINATION_ADDRESS_LAT + " REAL, " +
+                    OrderFields.DESTINATION_ADDRESS_LNG + " REAL, " +
+
                     OrderFields.ORDER + " TEXT, " +
                     OrderFields.DEADLINE + " INTEGER, " +
                     OrderFields.STATUS + " TEXT, " +

@@ -3,6 +3,7 @@ package ru.smartexpress.courierapp.order;
 import android.content.Context;
 import android.content.Intent;
 import android.support.v4.content.LocalBroadcastManager;
+import ru.smartexpress.common.dto.AddressDTO;
 import ru.smartexpress.common.dto.OrderDTO;
 import ru.smartexpress.courierapp.activity.MainActivity;
 
@@ -16,7 +17,11 @@ import java.util.Date;
  */
 public class OrderHelper {
     public static String getShortDescription(OrderDTO orderDTO){
-        return String.format("Заказ №%d из %s, %s на %s до %tR", orderDTO.getId(), orderDTO.getPartnerName(), orderDTO.getSourceAddress(), orderDTO.getDestinationAddress(), new Date(orderDTO.getDeadline()));
+        return String.format("Заказ №%d из %s, %s на %s до %tR", orderDTO.getId(), orderDTO.getPartnerName(), orderDTO.getSourceAddress().getFirstLine(), orderDTO.getDestinationAddress().getSecondLine(), new Date(orderDTO.getDeadline()));
+    }
+
+    public static String getFullAddress(AddressDTO addressDTO){
+        return addressDTO.getFirstLine()+" "+addressDTO.getSecondLine();
     }
 
     public static String getNamePhone(String name, String phone){

@@ -8,8 +8,14 @@ package ru.smartexpress.courierapp.order;
  */
 public interface OrderFields {
     String ID = "id";
-    String SOURCE_ADDRESS = "sourceAddress";
-    String DESTINATION_ADDRESS = "destinationAddress";
+    String SOURCE_ADDRESS_FIRST_LINE = "sourceAddressFirstLine";
+    String SOURCE_ADDRESS_SECOND_LINE = "sourceAddressSecondLine";
+    String SOURCE_ADDRESS_LAT = "sourceAddressLat";
+    String SOURCE_ADDRESS_LNG = "sourceAddressLng";
+    String DESTINATION_ADDRESS_FIRST_LINE = "destinationAddressFirstLine";
+    String DESTINATION_ADDRESS_SECOND_LINE = "destinationAddressSecondLine";
+    String DESTINATION_ADDRESS_LAT = "destinationAddressLat";
+    String DESTINATION_ADDRESS_LNG = "destinationAddressLng";
     String ORDER = "orderInfo";
     String DEADLINE = "deadline";
     String PICKUP_DEADLINE = "pickupDeadline";

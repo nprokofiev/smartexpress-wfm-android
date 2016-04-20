@@ -1,12 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">SmartExpress</string>
+    <string name="app_name">СмартЭкспресс</string>
     <string name="submit">OK</string>
     <string name="register">Регистрация</string>
     <string name="phone">Телефон</string>
+    <string name="full_name">Полное имя</string>
     <string name="password">Пароль</string>
+    <string name="password_confirm">Подтверждение пароля</string>
     <string name="logout">Выйти</string>
     <string name="settings">Настройки</string>
+    <string name="about">О СмартЭкспресс</string>
     <string name="must_not_be_empty">Поле неверно заполнено</string>
     <string name="title_activity_login">Вход в систему</string>
     <string name="error_invalid_password">Пароль должен состоять только из букв и цифр латинского алфавита и иметь длину не менее 6ти символов</string>
@@ -22,5 +25,13 @@
     <string name="gcm_problem">Проблема с регистрацией GCM. Возможно ваше приложение требует обновления.</string>
     <string name="done_ok">Заказ успешно завершен</string>
     <string name="updated_ok">Заказ успешно обновлен</string>
+    <string name="application_failed">Приложение сломалось</string>
+    <string name="activation_code">Активационный код</string>
+    <string name="about_see">СмартЭкспресс ver %1$s %2$s</string>
+    <string name="order_canceled">Заказ отменен</string>
+    <string name="order_updated_by_operator">Заказ обновлен оператором</string>
+    <string name="order_assigned_to_you">На Вас назначен заказ</string>
+    <string name="new_orders_pending">Поступило %d новых заказов</string>
+    <string name="new_order_offered">Вам предлагают заказ</string>
 
 </resources>

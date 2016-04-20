@@ -1,8 +1,9 @@
 package ru.smartexpress.courierapp.activity;
 
 import android.annotation.TargetApi;
-import android.app.NotificationManager;
 import android.content.*;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
@@ -21,17 +22,14 @@ import android.view.*;
 import android.widget.ImageView;
 import android.widget.TextView;
 import com.octo.android.robospice.SpiceManager;
-import com.octo.android.robospice.persistence.exception.SpiceException;
-import com.octo.android.robospice.request.listener.RequestListener;
 import ru.smartexpress.common.status.CourierStatus;
+import ru.smartexpress.courierapp.BuildConfig;
 import ru.smartexpress.courierapp.R;
 import ru.smartexpress.courierapp.core.Logger;
 import ru.smartexpress.courierapp.core.SeUser;
 import ru.smartexpress.courierapp.core.SmartExpress;
-import ru.smartexpress.courierapp.helper.SystemHelper;
 import ru.smartexpress.courierapp.service.JsonSpiceService;
 import ru.smartexpress.courierapp.service.LocationService;
-import ru.smartexpress.courierapp.service.notification.AbstractOrderNotificationHandler;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -78,6 +76,11 @@ public class MainActivity extends AppCompatActivity {
     private BroadcastReceiver updateReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
+            if (SeUser.current()==null){
+                startLoginScreen();
+                return;
+            }
+
             String action = intent.getAction();
             Logger.info("got intent"+action);
             mAppSectionsPagerAdapter.update();
@@ -90,6 +93,10 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        /*if(true){
+            throw new RuntimeException("TEST FAILURE");
+        }*/
+
         if(updateReceiver!=null){
             LocalBroadcastManager broadcastManager = LocalBroadcastManager.getInstance(this);
             IntentFilter intentFilter = new IntentFilter(UPDATE_CONTENT_ACTION);
@@ -248,6 +255,9 @@ public class MainActivity extends AppCompatActivity {
             case R.id.logout:
                 logout();
                 return true;
+            case R.id.about:
+                showAboutDialog();
+                return true;
             case R.id.statusFree:
                 makeMeOnline();
                 return true;
@@ -354,6 +364,28 @@ public class MainActivity extends AppCompatActivity {
         bindService(new Intent(this,
                 LocationService.class), mConnection, 0);
         mIsBound = true;
+    }
+
+    private void showAboutDialog(){
+        PackageInfo pInfo = null;
+        try {
+            pInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
+        } catch (PackageManager.NameNotFoundException e) {
+            Logger.error("failed to get packet", e);
+            return;
+        }
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle(getString(R.string.app_name));
+        builder.setMessage(getString(R.string.about_see,  pInfo.versionName, BuildConfig.ENVIRONMENT));
+        builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() { // Кнопка ОК
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss(); // Отпускает диалоговое окно
+            }
+        });
+        AlertDialog dialog = builder.create();
+        dialog.show();
     }
 
     private void doUnbindService()

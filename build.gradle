@@ -46,18 +46,38 @@ android {
         applicationId "ru.smartexpress.courierapp"
         minSdkVersion 14
         targetSdkVersion 23
-        versionCode 1
-        versionName "1.0"
 
     }
+
+    signingConfigs {
+
+        release {
+            storeFile file(RELEASE_STORE_FILE)
+            storePassword RELEASE_STORE_PASSWORD
+            keyAlias RELEASE_KEY_ALIAS
+            keyPassword RELEASE_KEY_PASSWORD
+        }
+    }
+
     buildTypes {
         release {
             buildConfigField "String", "ENVIRONMENT", "\"prod\";"
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.release
+
         }
+
+        uat {
+            buildConfigField "String", "ENVIRONMENT", "\"uat\";"
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.release
+        }
+
         debug{
             buildConfigField "String", "ENVIRONMENT", "\"dev\";"
+            signingConfig signingConfigs.release
 
         }
     }
@@ -88,6 +108,7 @@ dependencies {
     compile 'com.octo.android.robospice:robospice-spring-android:1.4.14'
     compile 'com.fasterxml.jackson.core:jackson-databind:2.5.3'
     compile 'com.squareup.okhttp3:okhttp:3.2.0'
+    compile 'ch.acra:acra:4.8.5'
 
     //remove me after debuging
     compile 'com.squareup.okhttp3:logging-interceptor:3.2.0'

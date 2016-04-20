@@ -22,8 +22,13 @@ import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 import com.octo.android.robospice.SpiceManager;
+import com.octo.android.robospice.exception.NetworkException;
+import com.octo.android.robospice.exception.NoNetworkException;
 import com.octo.android.robospice.persistence.exception.SpiceException;
 import com.octo.android.robospice.request.listener.RequestListener;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpStatusCodeException;
 import ru.smartexpress.common.dto.CourierLocation;
 import ru.smartexpress.common.dto.OrderDTO;
 import ru.smartexpress.common.dto.OrderList;
@@ -38,6 +43,9 @@ import ru.smartexpress.courierapp.order.OrderHelper;
 import ru.smartexpress.courierapp.request.ChangeCourierStatusRequest;
 import ru.smartexpress.courierapp.request.ConfirmedOrdersRequest;
 import ru.smartexpress.courierapp.request.LocationChangedRequest;
+import ru.smartexpress.courierapp.service.rest.AuthenticationException;
+import ru.smartexpress.courierapp.service.rest.GcmException;
+import ru.smartexpress.courierapp.service.rest.SeeHttpServerErrorException;
 
 /**
  * courier-android
@@ -128,6 +136,7 @@ public class LocationService extends Service implements GoogleApiClient.Connecti
         spiceManager.execute(request, new RequestListener<Object>() {
             @Override
             public void onRequestFailure(SpiceException spiceException) {
+                detectRestError(spiceException);
                 Logger.info("location update failed", spiceException);
             }
 
@@ -152,6 +161,7 @@ public class LocationService extends Service implements GoogleApiClient.Connecti
         spiceManager.execute(new ConfirmedOrdersRequest(), new RequestListener<OrderList>() {
             @Override
             public void onRequestFailure(SpiceException spiceException) {
+                detectRestError(spiceException);
                 Logger.error("Failed to sync orders", spiceException);
             }
 
@@ -217,6 +227,38 @@ public class LocationService extends Service implements GoogleApiClient.Connecti
         });
     }
 
+    private void detectRestError(SpiceException spiceException){
+        Logger.error(spiceException, "rest error");
+        if (spiceException instanceof NetworkException) {
+            NetworkException exception = (NetworkException) spiceException;
+            Throwable cause = exception.getCause();
+            if (cause instanceof SeeHttpServerErrorException) {
+                SeeHttpServerErrorException seeHttpServerErrorException = (SeeHttpServerErrorException) exception.getCause();
+                ru.smartexpress.common.dto.Error error = seeHttpServerErrorException.getSEEError();
+                // error.getErrorMessage();
+
+            }
+            else if(cause instanceof HttpClientErrorException){
+                HttpStatus statusCode = ((HttpStatusCodeException)cause).getStatusCode();
+                if(HttpStatus.UNAUTHORIZED.equals(statusCode)){
+                    SeUser.current().logout();
+                    OrderHelper.updateContent(this);
+                    stopSelf();
+                }
+
+            }
+
+            else {
+            }
+
+        }
+        else if(spiceException instanceof NoNetworkException){
+        }
+        else{
+        }
+
+    }
+
 
 
 
@@ -240,6 +282,8 @@ public class LocationService extends Service implements GoogleApiClient.Connecti
         Location location = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
         onLocationChanged(location);
     }
+
+
 
     protected void stopLocationUpdates() {
         LocationServices.FusedLocationApi.removeLocationUpdates(

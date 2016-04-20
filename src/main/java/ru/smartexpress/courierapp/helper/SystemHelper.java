@@ -10,6 +10,7 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import ru.smartexpress.courierapp.R;
 import ru.smartexpress.courierapp.activity.MainActivity;
+import ru.smartexpress.courierapp.order.OrderHelper;
 
 
 /**
@@ -32,9 +33,7 @@ public class SystemHelper {
     }
 
     public static void sendUpdateUI(Context context){
-        Intent updateMainActivity = new Intent();
-        updateMainActivity.setAction(MainActivity.UPDATE_CONTENT_ACTION);
-        context.sendBroadcast(updateMainActivity);
+        OrderHelper.updateContent(context);
     }
 
     public static boolean isUiThread(){

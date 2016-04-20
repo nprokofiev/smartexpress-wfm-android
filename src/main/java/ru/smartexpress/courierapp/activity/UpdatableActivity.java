@@ -5,9 +5,16 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.location.Address;
+import android.net.Uri;
+import android.text.Html;
+import android.text.Spanned;
+import android.view.View;
+import ru.smartexpress.common.dto.AddressDTO;
 import ru.smartexpress.common.dto.OrderDTO;
 import ru.smartexpress.courierapp.core.SeUser;
 import ru.smartexpress.courierapp.helper.AuthHelper;
+import ru.smartexpress.courierapp.order.OrderHelper;
 
 /**
  * courier-android
@@ -24,6 +31,7 @@ public abstract class UpdatableActivity extends Activity {
         }
     };
 
+    protected OrderDTO orderDTO;
 
     @Override
     protected void onStart() {
@@ -47,6 +55,23 @@ public abstract class UpdatableActivity extends Activity {
             finish();
             return;
         }
+    }
+
+
+
+
+    protected Spanned getUrlNavigationForAddress(AddressDTO addressDTO){
+        Double lat = addressDTO.getLat();
+        Double lng = addressDTO.getLng();
+        Uri mapsUri = null;
+        if(lat!=null && !lat.equals(0.0)){
+            mapsUri = Uri.parse(String.format("http://maps.google.com/maps?q=%s,%s", lat, lng));
+        }
+        else {
+            mapsUri = Uri.parse(String.format("http://maps.google.com/maps?q=%s", addressDTO.getFirstLine()));
+        }
+
+        return Html.fromHtml("<a href=\""+mapsUri+"\">"+ OrderHelper.getFullAddress(addressDTO)+"</a>");
     }
 
     public abstract void onUpdateReceived();

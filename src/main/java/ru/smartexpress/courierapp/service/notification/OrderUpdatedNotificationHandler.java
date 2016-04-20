@@ -7,8 +7,11 @@ import com.octo.android.robospice.SpiceManager;
 import ru.smartexpress.common.NotificationType;
 import ru.smartexpress.common.dto.MobileMessageDTO;
 import ru.smartexpress.common.dto.OrderDTO;
+import ru.smartexpress.common.status.OrderTaskStatus;
+import ru.smartexpress.courierapp.R;
 import ru.smartexpress.courierapp.activity.MainActivity;
 import ru.smartexpress.courierapp.activity.OrderActivity;
+import ru.smartexpress.courierapp.core.Logger;
 import ru.smartexpress.courierapp.order.OrderHelper;
 
 /**
@@ -31,10 +34,17 @@ public class OrderUpdatedNotificationHandler extends AbstractOrderNotificationHa
     @Override
     public void handle(MobileMessageDTO messageDTO) {
         OrderDTO orderDTO = messageDTO.getOrder();
-        orderDAO.saveOrder(orderDTO);
+        String status = orderDTO.getStatus();
+        if(OrderTaskStatus.DONE.toString().equals(status)){
+            Logger.info("status is DONE. Deleting order #"+orderDTO.getId());
+            orderDAO.deleteOrder(orderDTO.getId());
+        }
+        else {
+            orderDAO.saveOrder(orderDTO);
+        }
         Intent intent = new Intent(context, OrderActivity.class);
         intent.putExtra(OrderActivity.ORDER_DTO, orderDTO);
-        pingNotify("Заказ обновлен оператором", OrderHelper.getShortDescription(orderDTO), messageDTO.getId().intValue(), intent);
+        pingNotify(context.getString(R.string.order_updated_by_operator), OrderHelper.getShortDescription(orderDTO), messageDTO.getId().intValue(), intent);
     }
 
 

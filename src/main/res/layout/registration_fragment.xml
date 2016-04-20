@@ -15,7 +15,7 @@
                 android:ems="10"
                 android:id="@+id/nameEditText"
                 android:layout_gravity="center_horizontal"
-                android:hint="ФИО" />
+                android:hint="@string/full_name" />
 
             <EditText
                 android:layout_width="match_parent"
@@ -24,7 +24,7 @@
                 android:ems="10"
                 android:id="@+id/phoneEditText"
                 android:layout_gravity="center_horizontal"
-                android:hint="Моб. телефон" />
+                android:hint="@string/phone" />
 
             <EditText
                 android:layout_width="match_parent"
@@ -33,7 +33,7 @@
                 android:ems="10"
                 android:id="@+id/passwordEditText"
                 android:layout_gravity="center_horizontal"
-                android:hint="Пароль" />
+                android:hint="@string/password" />
 
             <EditText
                 android:layout_width="match_parent"
@@ -42,8 +42,14 @@
                 android:ems="10"
                 android:id="@+id/confirmPasswordEditText"
                 android:layout_gravity="center_horizontal"
-                android:hint="Подтверждение пароля" />
-
+                android:hint="@string/password_confirm" />
+    <EditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:id="@+id/activationCodeEditText"
+            android:layout_gravity="center_horizontal"
+            android:hint="@string/activation_code" />
 
             <RelativeLayout
                 android:layout_width="match_parent"

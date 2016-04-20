@@ -139,6 +139,7 @@ public class SeUser {
     }
 
     public void logout(){
+        Logger.info("logging user out");
         SeApplication.smartexpress().store.clear();
     }
 
@@ -169,11 +170,12 @@ public class SeUser {
     }
 
 
-    public void register(final LoginResult handler){
+    public void register(final LoginResult handler, String activationCode){
         final CourierRegistrationRequest registrationRequest = new CourierRegistrationRequest();
         registrationRequest.setPassword(password);
         registrationRequest.setName(name);
         registrationRequest.setPhone(phone);
+        registrationRequest.setActivationCode(activationCode);
         Logger.info("registering user");
         handler.getSpiceManager().execute(new RegistrationRequest(registrationRequest), new RequestListener<CourierRegistrationResult>() {
             @Override

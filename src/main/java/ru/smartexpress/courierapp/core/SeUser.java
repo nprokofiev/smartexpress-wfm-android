@@ -144,7 +144,7 @@ public class SeUser {
     }
 
     public void goOnline(Context context){
-        if(!SystemHelper.isMyServiceRunning(LocationService.class, context)) {
+        if(!LocationService.isRunning()) {
             setStatus(CourierStatus.ONLINE.toString());
             storeUser();
             Intent locationService = new Intent(context, LocationService.class);
@@ -154,7 +154,7 @@ public class SeUser {
     }
 
     public void goOffline(Context context){
-        if(SystemHelper.isMyServiceRunning(LocationService.class, context)) {
+        if(LocationService.isRunning()) {
             Logger.info("senging stop service event");
             Intent locationService = new Intent(context, LocationService.class);
             context.stopService(locationService);

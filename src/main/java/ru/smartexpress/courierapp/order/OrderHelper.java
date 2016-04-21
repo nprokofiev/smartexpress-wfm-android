@@ -5,8 +5,11 @@ import android.content.Intent;
 import android.support.v4.content.LocalBroadcastManager;
 import ru.smartexpress.common.dto.AddressDTO;
 import ru.smartexpress.common.dto.OrderDTO;
+import ru.smartexpress.courierapp.R;
+import ru.smartexpress.courierapp.SeApplication;
 import ru.smartexpress.courierapp.activity.MainActivity;
 
+import java.text.DateFormat;
 import java.util.Date;
 
 /**
@@ -17,7 +20,24 @@ import java.util.Date;
  */
 public class OrderHelper {
     public static String getShortDescription(OrderDTO orderDTO){
-        return String.format("Заказ №%d из %s, %s на %s до %tR", orderDTO.getId(), orderDTO.getPartnerName(), orderDTO.getSourceAddress().getFirstLine(), orderDTO.getDestinationAddress().getSecondLine(), new Date(orderDTO.getDeadline()));
+        return String.format("№%d из %s, %s на %s до %tR", orderDTO.getId(), orderDTO.getPartnerName(), orderDTO.getSourceAddress().getFirstLine(), orderDTO.getDestinationAddress().getFirstLine(), new Date(orderDTO.getDeadline()));
+    }
+
+    public static String getOrderHeader(OrderDTO orderDTO){
+        String time = null;
+        Context context = SeApplication.app().getApplicationContext();
+        String deadline = getTime(orderDTO.getDeadline(), context);
+
+        long deadlineFrom = orderDTO.getDeadlineFrom();
+        if(deadlineFrom == 0){
+            time = context.getString(R.string.deadline_time, deadline);
+        }
+        else {
+            time = context.getString(R.string.deadline_interval, getTime(deadlineFrom, context), deadline);
+        }
+
+        return   String.format("№%d из %s %s ", orderDTO.getId(), orderDTO.getPartnerName(),  time);
+
     }
 
     public static String getFullAddress(AddressDTO addressDTO){
@@ -28,6 +48,14 @@ public class OrderHelper {
          return String.format("%s тел. %s ", name, phone);
 
     }
+
+    public static String getTime(long unixtime, Context context){
+        Date date = new Date(unixtime);
+        DateFormat dateFormat = android.text.format.DateFormat.getTimeFormat(context);
+        return dateFormat.format(date);
+    }
+
+
 
     public static void updateContent(Context context){
         LocalBroadcastManager broadcastManager = LocalBroadcastManager.getInstance(context);

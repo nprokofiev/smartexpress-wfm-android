@@ -59,6 +59,7 @@ public class LocationService extends Service implements GoogleApiClient.Connecti
     public static final int NOTIFICATION_ID=1;
     public static final long LOCATION_UPDATE_INTERVAL = 30000;
     public static final long FASTEST_UPDATE_INTERVAL = 30000;
+    private static volatile boolean isRunning;
 
     public static final String LAST_SUCCESSFUL_LOCATION_UPDATE = "last_successful_location_update";
 
@@ -102,6 +103,7 @@ public class LocationService extends Service implements GoogleApiClient.Connecti
         Logger.info("starting service");
         Logger.info("Location service started");
         Logger.info("Location service creating connection");
+        isRunning = true;
     }
 
     @Override
@@ -203,6 +205,7 @@ public class LocationService extends Service implements GoogleApiClient.Connecti
         stopLocationUpdates();
         spiceManager.shouldStop();
         stopNotification();
+        isRunning = false;
         super.onDestroy();
     }
 
@@ -289,5 +292,9 @@ public class LocationService extends Service implements GoogleApiClient.Connecti
         LocationServices.FusedLocationApi.removeLocationUpdates(
                 mGoogleApiClient, this);
        Logger.info("location updates stopped");
+    }
+
+    public static boolean isRunning(){
+        return isRunning;
     }
 }

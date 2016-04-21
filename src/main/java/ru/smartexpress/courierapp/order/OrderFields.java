@@ -18,6 +18,7 @@ public interface OrderFields {
     String DESTINATION_ADDRESS_LNG = "destinationAddressLng";
     String ORDER = "orderInfo";
     String DEADLINE = "deadline";
+    String DEADLINE_FROM = "deadlineFrom";
     String PICKUP_DEADLINE = "pickupDeadline";
     String STATUS = "status";
     String TABLE_NAME = "orders";

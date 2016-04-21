@@ -133,7 +133,6 @@ public class MainActivity extends AppCompatActivity {
 
         mTabLayout.getTabAt(0).getCustomView().setSelected(true);
 
-        ensureServices();
         doBindService();
 
     }

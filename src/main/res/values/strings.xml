@@ -33,5 +33,7 @@
     <string name="order_assigned_to_you">На Вас назначен заказ</string>
     <string name="new_orders_pending">Поступило %d новых заказов</string>
     <string name="new_order_offered">Вам предлагают заказ</string>
+    <string name="deadline_time">до %1$s</string>
+    <string name="deadline_interval">%1$s - %2$s</string>
 
 </resources>

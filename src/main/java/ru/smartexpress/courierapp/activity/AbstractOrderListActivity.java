@@ -13,6 +13,7 @@ import com.octo.android.robospice.SpiceManager;
 import ru.smartexpress.common.status.OrderTaskStatus;
 import ru.smartexpress.common.dto.OrderDTO;
 import ru.smartexpress.common.dto.OrderList;
+import ru.smartexpress.courierapp.R;
 import ru.smartexpress.courierapp.order.OrderDAO;
 import ru.smartexpress.courierapp.order.OrderHelper;
 import ru.smartexpress.courierapp.service.JsonSpiceService;
@@ -74,14 +75,12 @@ public abstract class AbstractOrderListActivity extends ListFragment implements 
 
     protected void loadData(){
         orders = getData();
-        List<String> items = new ArrayList<String>();
-        for (OrderDTO orderDTO : orders){
-           String order = OrderHelper.getShortDescription(orderDTO);
-           items.add(order);
-        }
-        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, items);
+
+        SeArrayAdapter arrayAdapter = new SeArrayAdapter(getActivity(), R.layout.order_fragment_list_item, orders);
         setListAdapter(arrayAdapter);
     }
+
+
 
     /*    public void createOrderListGrid(){
         ProgressBar progressBar = new ProgressBar(this);

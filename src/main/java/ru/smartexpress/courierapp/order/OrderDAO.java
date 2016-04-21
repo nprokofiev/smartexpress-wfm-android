@@ -115,6 +115,7 @@ public class OrderDAO {
         OrderDTO orderDTO = new OrderDTO();
         orderDTO.setId(cursor.getLong(cursor.getColumnIndex(OrderFields.ID)));
         orderDTO.setDeadline(cursor.getLong(cursor.getColumnIndex(OrderFields.DEADLINE)));
+        orderDTO.setDeadlineFrom(cursor.getLong(cursor.getColumnIndex(OrderFields.DEADLINE_FROM)));
 
         //Destination Address
         AddressDTO destinationAddress = new AddressDTO();
@@ -148,7 +149,7 @@ public class OrderDAO {
         ContentValues cv = new ContentValues();
         cv.put(OrderFields.ID, orderDTO.getId());
         cv.put(OrderFields.DEADLINE, orderDTO.getDeadline());
-
+        cv.put(OrderFields.DEADLINE_FROM, orderDTO.getDeadlineFrom());
         //destination address
         AddressDTO destinationAddress = orderDTO.getDestinationAddress();
         cv.put(OrderFields.DESTINATION_ADDRESS_FIRST_LINE, destinationAddress.getFirstLine());

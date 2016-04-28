@@ -117,6 +117,7 @@ public class OrderDAO {
         orderDTO.setDeadline(cursor.getLong(cursor.getColumnIndex(OrderFields.DEADLINE)));
         orderDTO.setDeadlineFrom(cursor.getLong(cursor.getColumnIndex(OrderFields.DEADLINE_FROM)));
 
+
         //Destination Address
         AddressDTO destinationAddress = new AddressDTO();
         destinationAddress.setFirstLine(cursor.getString(cursor.getColumnIndex(OrderFields.DESTINATION_ADDRESS_FIRST_LINE)));

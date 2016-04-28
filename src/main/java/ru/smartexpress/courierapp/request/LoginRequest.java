@@ -67,6 +67,7 @@ public class LoginRequest extends AbstractSpringAndroidRequest<UserDTO> implemen
 
     private String getGcmRegistrationId() throws IOException{
         try {
+            Logger.info("requesting gcm");
             Context context = SeApplication.app();
             InstanceID instanceID = InstanceID.getInstance(context);
             return instanceID.getToken(SeApplication.smartexpress().config.senderId,

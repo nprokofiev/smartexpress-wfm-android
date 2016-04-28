@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.location.Address;
 import android.net.Uri;
+import android.os.Bundle;
 import android.text.Html;
 import android.text.Spanned;
 import android.view.View;
@@ -34,9 +35,10 @@ public abstract class UpdatableActivity extends Activity {
     protected OrderDTO orderDTO;
 
     @Override
-    protected void onStart() {
-        super.onStart();
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
         registerReceiver(updateReceiver, new IntentFilter(MainActivity.UPDATE_CONTENT_ACTION));
+
     }
 
     @Override

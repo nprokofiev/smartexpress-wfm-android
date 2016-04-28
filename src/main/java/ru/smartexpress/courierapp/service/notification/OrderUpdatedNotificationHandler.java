@@ -43,7 +43,7 @@ public class OrderUpdatedNotificationHandler extends AbstractOrderNotificationHa
             orderDAO.saveOrder(orderDTO);
         }
         Intent intent = new Intent(context, OrderActivity.class);
-        intent.putExtra(OrderActivity.ORDER_DTO, orderDTO);
+        intent.putExtra(OrderActivity.ORDER_ID, orderDTO.getId());
         pingNotify(context.getString(R.string.order_updated_by_operator), OrderHelper.getShortDescription(orderDTO), messageDTO.getId().intValue(), intent);
     }
 

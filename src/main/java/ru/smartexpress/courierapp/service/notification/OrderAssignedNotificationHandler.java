@@ -32,7 +32,7 @@ public class OrderAssignedNotificationHandler extends AbstractOrderNotificationH
         OrderDTO orderDTO = extras.getOrder();
         orderDAO.saveOrder(orderDTO);
         Intent intent = new Intent(context, OrderActivity.class);
-        intent.putExtra(OrderActivity.ORDER_DTO, orderDTO);
+        intent.putExtra(OrderActivity.ORDER_ID, orderDTO.getId());
         pingNotify(context.getString(R.string.order_assigned_to_you), OrderHelper.getShortDescription(orderDTO), extras.getId().intValue(), intent);
     }
 }

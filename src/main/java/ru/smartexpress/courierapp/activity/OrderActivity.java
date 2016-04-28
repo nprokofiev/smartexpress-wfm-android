@@ -12,6 +12,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 import com.octo.android.robospice.SpiceManager;
+import com.octo.android.robospice.persistence.exception.SpiceException;
 import com.octo.android.robospice.request.springandroid.SpringAndroidSpiceRequest;
 import ru.smartexpress.common.status.OrderTaskStatus;
 import ru.smartexpress.common.dto.OrderDTO;
@@ -49,6 +50,7 @@ public class OrderActivity extends UpdatableActivity implements View.OnClickList
 
     SpiceManager spiceManager = new SpiceManager(JsonSpiceService.class);
     public static final String ORDER_DTO= "orderDTO";
+    public static final String ORDER_ID = "orderId";
     private OrderDAO orderDAO;
 
 
@@ -70,20 +72,34 @@ public class OrderActivity extends UpdatableActivity implements View.OnClickList
         cost = (TextView)findViewById(R.id.orderCost);
         footerLayout = (RelativeLayout)findViewById(R.id.orderTrackingFooter);
         orderDAO = new OrderDAO(this);
-        Intent intent = getIntent();
-        orderDTO = (OrderDTO)intent.getSerializableExtra(ORDER_DTO);
 
-        setUIStatus(orderDTO.getStatus());
     }
 
     @Override
     protected void onStart() {
         super.onStart();
+
+        Intent intent = getIntent();
+
+        Long orderId = intent.getLongExtra(ORDER_ID, 0L);
+
+        if(orderId.equals(0L)) {
+            finish();
+            return;
+        }
+
+        orderDTO = orderDAO.getOrderById(orderId);
+        if(orderDTO==null) {
+            finish();
+            return;
+        }
+        setUIStatus(orderDTO.getStatus());
+
+
         if(!spiceManager.isStarted()){
             spiceManager.start(this);
         }
         updateUI();
-
     }
 
     private void updateUI(){
@@ -136,11 +152,13 @@ public class OrderActivity extends UpdatableActivity implements View.OnClickList
 
         SpringAndroidSpiceRequest request;
         setProgressBarIndeterminateVisibility(true);
+        accept.setEnabled(false);
         if(OrderTaskStatus.CONFIRMED.name().equals(orderDTO.getStatus())){
             request = new PickUpOrderRequest(orderDTO.getId());
             spiceManager.execute(request, new SimpleRequestListener(this) {
                 @Override
                 public void onRequestSuccess(Object o) {
+                    accept.setEnabled(true);
                     orderDTO.setStatus(OrderTaskStatus.PICKED_UP.name());
                     setUIStatus(orderDTO.getStatus());
                     orderDAO.updateOrderStatus(orderDTO.getId(), OrderTaskStatus.PICKED_UP);
@@ -151,6 +169,12 @@ public class OrderActivity extends UpdatableActivity implements View.OnClickList
                     finish();
 
                 }
+
+                @Override
+                public void onRequestFailure(SpiceException spiceException) {
+                    accept.setEnabled(true);
+                    super.onRequestFailure(spiceException);
+                }
             });
 
         }
@@ -159,12 +183,19 @@ public class OrderActivity extends UpdatableActivity implements View.OnClickList
             spiceManager.execute(request, new SimpleRequestListener(this) {
                 @Override
                 public void onRequestSuccess(Object o) {
+                    accept.setEnabled(true);
                     orderDAO.deleteOrder(orderDTO.getId());
                     Intent intent = new Intent(OrderActivity.this, MainActivity.class);
                     intent.putExtra(MainActivity.TAB_INDEX, 1);
                     startActivity(intent);
                     Toast.makeText(SeApplication.app(), getString(R.string.done_ok), Toast.LENGTH_LONG);
                     finish();
+                }
+
+                @Override
+                public void onRequestFailure(SpiceException spiceException) {
+                    accept.setEnabled(true);
+                    super.onRequestFailure(spiceException);
                 }
             });
         }

@@ -1,21 +1,19 @@
 package ru.smartexpress.courierapp.service;
 
 import android.Manifest;
-import android.annotation.TargetApi;
 import android.app.Notification;
-import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
-import android.content.*;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Binder;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.LocalBroadcastManager;
+import android.support.v4.app.NotificationCompat;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationListener;
@@ -30,6 +28,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpStatusCodeException;
 import ru.smartexpress.common.dto.CourierLocation;
+import ru.smartexpress.common.dto.HeartBeatDTO;
 import ru.smartexpress.common.dto.OrderDTO;
 import ru.smartexpress.common.dto.OrderList;
 import ru.smartexpress.common.status.CourierStatus;
@@ -38,13 +37,12 @@ import ru.smartexpress.courierapp.SeApplication;
 import ru.smartexpress.courierapp.activity.MainActivity;
 import ru.smartexpress.courierapp.core.Logger;
 import ru.smartexpress.courierapp.core.SeUser;
+import ru.smartexpress.courierapp.core.SmartExpress;
 import ru.smartexpress.courierapp.order.OrderDAO;
 import ru.smartexpress.courierapp.order.OrderHelper;
 import ru.smartexpress.courierapp.request.ChangeCourierStatusRequest;
 import ru.smartexpress.courierapp.request.ConfirmedOrdersRequest;
 import ru.smartexpress.courierapp.request.LocationChangedRequest;
-import ru.smartexpress.courierapp.service.rest.AuthenticationException;
-import ru.smartexpress.courierapp.service.rest.GcmException;
 import ru.smartexpress.courierapp.service.rest.SeeHttpServerErrorException;
 
 /**
@@ -135,7 +133,7 @@ public class LocationService extends Service implements GoogleApiClient.Connecti
             return;
         Logger.info( "got location lat:" + location.getLatitude() + " lot:" + location.getLongitude());
         LocationChangedRequest request = new LocationChangedRequest(new CourierLocation(location.getLatitude(), location.getLongitude()));
-        spiceManager.execute(request, new RequestListener<Object>() {
+        spiceManager.execute(request, new RequestListener<HeartBeatDTO>() {
             @Override
             public void onRequestFailure(SpiceException spiceException) {
                 detectRestError(spiceException);
@@ -143,9 +141,16 @@ public class LocationService extends Service implements GoogleApiClient.Connecti
             }
 
             @Override
-            public void onRequestSuccess(Object s) {
+            public void onRequestSuccess(HeartBeatDTO s) {
                 Logger.info("location updated successfully");
                 sharedPreferences.edit().putLong(LAST_SUCCESSFUL_LOCATION_UPDATE, System.currentTimeMillis()).commit();
+                if(s.isHasNewMessages()) {
+                    SmartExpress smartExpress = SeApplication.smartexpress();
+                    long currentTime = System.currentTimeMillis() / 1000L;
+                    if (currentTime - smartExpress.getLastTimeNotificationProcessed() > MobileMessageIntentService.MAXIMUM_GCM_PAUSE_SEC) {
+                        smartExpress.processNotifications();
+                    }
+                }
             }
         });
 
@@ -179,14 +184,13 @@ public class LocationService extends Service implements GoogleApiClient.Connecti
         });
     }
 
-    @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
     private void startNotification(){
         Intent intent = new Intent(this, MainActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP
                 | Intent.FLAG_ACTIVITY_SINGLE_TOP);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, 0);
 
-        Notification notification = new Notification.Builder(this)
+        Notification notification = new NotificationCompat.Builder(this)
                 .setContentTitle(getString(R.string.working))
                 .setContentText(getString(R.string.currently_working_for_smartexpress))
                 .setSmallIcon(R.drawable.smartexpress_launcher)
@@ -269,7 +273,7 @@ public class LocationService extends Service implements GoogleApiClient.Connecti
         LocationRequest mLocationRequest = new LocationRequest();
         mLocationRequest.setInterval(LOCATION_UPDATE_INTERVAL);
         mLocationRequest.setFastestInterval(FASTEST_UPDATE_INTERVAL);
-        mLocationRequest.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
+        mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             // TODO: Consider calling
             //    ActivityCompat#requestPermissions

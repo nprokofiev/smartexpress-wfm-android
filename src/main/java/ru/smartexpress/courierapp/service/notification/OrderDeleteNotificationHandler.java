@@ -32,7 +32,7 @@ public class OrderDeleteNotificationHandler extends AbstractOrderNotificationHan
         OrderDTO orderDTO = messageDTO.getOrder();
         orderDAO.deleteOrder(orderDTO.getId());
         Intent intent = new Intent(context, MainActivity.class);
-        intent.putExtra(OrderActivity.ORDER_DTO, orderDTO);
+        intent.putExtra(OrderActivity.ORDER_ID, orderDTO.getId());
         pingNotify(context.getString(R.string.order_canceled), OrderHelper.getShortDescription(orderDTO), messageDTO.getId().intValue(), intent);
 
     }

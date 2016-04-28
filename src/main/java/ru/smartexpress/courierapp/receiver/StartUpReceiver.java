@@ -11,10 +11,10 @@ import ru.smartexpress.courierapp.core.SmartExpress;
  * @author <a href="mailto:nprokofiev@gmail.com">Nikolay Prokofiev</a>
  * @date 04.04.16 11:00
  */
-public class BootReceiver extends BroadcastReceiver {
+public class StartUpReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-            SmartExpress.checkServices();
+            SmartExpress.onStartUp();
     }
 }

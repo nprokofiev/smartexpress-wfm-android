@@ -20,6 +20,15 @@ public class SeInstanceIdListenerService extends InstanceIDListenerService {
 
     private static final String TAG = "MyInstanceIDLS";
     private SpiceManager spiceManager = new SpiceManager(JsonSpiceService.class);
+
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        if(!spiceManager.isStarted())
+            spiceManager.start(this);
+    }
+
     /**
      * Called if InstanceID token is updated. This may occur if the security of
      * the previous token had been compromised. This call is initiated by the
@@ -28,6 +37,7 @@ public class SeInstanceIdListenerService extends InstanceIDListenerService {
     // [START refresh_token]
     @Override
     public void onTokenRefresh() {
+        Logger.info("got token update event");
         /*// Fetch updated Instance ID token and notify our app's server of any changes (if applicable).
         Intent intent = new Intent(this, RegistrationIntentService.class);
         startService(intent);*/
@@ -43,5 +53,13 @@ public class SeInstanceIdListenerService extends InstanceIDListenerService {
             }
         });
     }
+
+    @Override
+    public void onDestroy() {
+        spiceManager.shouldStop();
+        super.onDestroy();
+
+    }
+
     // [END refresh_token]
 }

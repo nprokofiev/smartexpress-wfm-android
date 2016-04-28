@@ -112,14 +112,23 @@ public class NewOrderActivity extends UpdatableActivity {
     }
 
     public void fillText(Intent intent){
-        OrderDTO orderDTO = (OrderDTO)intent.getSerializableExtra(OrderActivity.ORDER_DTO);
+
+        orderId = intent.getLongExtra(OrderActivity.ORDER_ID, 0L);
+
+        if(orderId.equals(0L))
+            finish();
+
+        OrderDTO orderDTO = orderDAO.getOrderById(orderId);
+
+
+
+
 
         sourceAddress.setText(OrderHelper.getFullAddress(orderDTO.getSourceAddress()));
         destinationAddress.setText(OrderHelper.getFullAddress(orderDTO.getDestinationAddress()));
             pickUpDeadline.setText(dateFormat.format(new Date(Long.valueOf(orderDTO.getPickUpDeadline()))));
             deadline.setText(dateFormat.format(new Date(Long.valueOf(orderDTO.getDeadline()))));
 
-        orderId = orderDTO.getId();
 
 
         sourceAddress.invalidate();
@@ -140,9 +149,11 @@ public class NewOrderActivity extends UpdatableActivity {
 
     private void onAccept(){
         setProgressBarIndeterminateVisibility(true);
+        setButtonEnabled(false);
         spiceManager.execute(new AcceptOrderRequest(orderId), new RequestListener<OrderDTO>() {
            @Override
            public void onRequestFailure(SpiceException spiceException) {
+               setButtonEnabled(true);
                NewOrderActivity.this.setProgressBarIndeterminateVisibility(false);
                AlertDialog.Builder builder = new AlertDialog.Builder(NewOrderActivity.this);
                builder.setMessage("Не удалось принять заказ, произошла ошибка.")
@@ -160,6 +171,7 @@ public class NewOrderActivity extends UpdatableActivity {
 
            @Override
            public void onRequestSuccess(OrderDTO o) {
+               setButtonEnabled(true);
                o.setStatus(OrderTaskStatus.CONFIRMED.name());
                orderDAO.saveOrder(o);
                NewOrderActivity.this.setProgressBarIndeterminateVisibility(false);
@@ -174,15 +186,28 @@ public class NewOrderActivity extends UpdatableActivity {
     }
 
     private void onReject(){
+        setButtonEnabled(false);
         spiceManager.execute(new RejectOrderRequest(orderId), new SimpleRequestListener(this) {
 
 
             @Override
             public void onRequestSuccess(Object o) {
+                setButtonEnabled(true);
                 Log.i("NewOrderActivity", "rejected ok");
                 orderDAO.deleteOrder(orderId);
                 finish();
             }
+
+            @Override
+            public void onRequestFailure(SpiceException spiceException) {
+                setButtonEnabled(true);
+                super.onRequestFailure(spiceException);
+            }
         });
+    }
+
+    private void setButtonEnabled(boolean enabled){
+        reject.setEnabled(enabled);
+        accept.setEnabled(enabled);
     }
 }

@@ -2,6 +2,7 @@ package ru.smartexpress.courierapp.core;
 
 import android.annotation.TargetApi;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Build;
 import android.util.Pair;
 import android.util.Patterns;
@@ -10,6 +11,8 @@ import ru.smartexpress.common.status.CourierStatus;
 import ru.smartexpress.courierapp.BuildConfig;
 import ru.smartexpress.courierapp.SeApplication;
 import ru.smartexpress.courierapp.service.JsonSpiceService;
+import ru.smartexpress.courierapp.service.RegistrationIntentService;
+import ru.smartexpress.courierapp.service.notification.NotificationProcessor;
 
 import java.net.URL;
 import java.util.HashSet;
@@ -33,6 +36,9 @@ public class SmartExpress {
     final SeCredentialManager store;
     final Context context;
     public final Config config;
+
+    private NotificationProcessor notificationProcessor;
+    private long lastTimeNotificationProcessed;
     private SmartExpress(Context context, Config config) {
         if (context == null) {
             throw new IllegalArgumentException("context cannot be null");
@@ -40,6 +46,17 @@ public class SmartExpress {
         this.context = context.getApplicationContext();
         this.config = config;
         this.store = new SeCredentialManager(this, context);
+    }
+
+    public synchronized void processNotifications(){
+        lastTimeNotificationProcessed = System.currentTimeMillis() / 1000L;
+        if(notificationProcessor==null)
+            notificationProcessor = new NotificationProcessor(context);
+        notificationProcessor.processPendingMessages();
+    }
+
+    public long getLastTimeNotificationProcessed(){
+        return lastTimeNotificationProcessed;
     }
 
     static SmartExpress getDefaultChecked() {
@@ -57,6 +74,18 @@ public class SmartExpress {
             }
         }
     }
+
+    public static void onStartUp(){
+        Logger.info("starting application");
+        SeUser user = SeUser.current();
+        if(user!=null){
+            Context context = SeApplication.app();
+            Intent intent = new Intent(context, RegistrationIntentService.class);
+            context.startService(intent);
+        }
+        checkServices();
+    }
+
 
     public static Builder builder(Context context){
         return new Builder(context);

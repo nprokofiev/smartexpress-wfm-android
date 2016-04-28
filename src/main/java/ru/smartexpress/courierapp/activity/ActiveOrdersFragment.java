@@ -23,7 +23,7 @@ public class ActiveOrdersFragment extends AbstractOrderListActivity {
     public void onListItemClick(ListView l, View v, int position, long id) {
         OrderDTO orderDTO = orders.get(position);
         Intent intent = new Intent(getActivity(), OrderActivity.class);
-        intent.putExtra(OrderActivity.ORDER_DTO, orderDTO);
+        intent.putExtra(OrderActivity.ORDER_ID, orderDTO.getId());
         startActivity(intent);
 
     }

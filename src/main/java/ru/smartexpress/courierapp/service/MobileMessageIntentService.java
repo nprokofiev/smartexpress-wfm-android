@@ -23,7 +23,7 @@ import ru.smartexpress.courierapp.service.notification.NotificationProcessor;
 @TargetApi(Build.VERSION_CODES.CUPCAKE)
 public class MobileMessageIntentService extends GcmListenerService {
     public static final String TAG = "GcmIntentService";
-    private NotificationProcessor notificationProcessor;
+    public static final long MAXIMUM_GCM_PAUSE_SEC = 30L;
 
 
 
@@ -37,9 +37,7 @@ public class MobileMessageIntentService extends GcmListenerService {
     }
 
     private synchronized void process(){
-        if(notificationProcessor==null)
-            notificationProcessor = new NotificationProcessor(this);
-        notificationProcessor.processPendingMessages();
+        SeApplication.smartexpress().processNotifications();
     }
 
 }

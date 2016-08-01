@@ -7,7 +7,7 @@ package ru.smartexpress.courierapp;
  * @date 24.12.14 16:53
  */
 public class CommonConstants {
-    public static final String DEV_HOST ="192.168.1.122";
+    public static final String DEV_HOST ="10.0.1.5";
     public static final int DEV_PORT =8888;
     public static final String DEV_PATH="/rest";
 

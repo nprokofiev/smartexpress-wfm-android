@@ -36,4 +36,10 @@
     <string name="deadline_time">до %1$s</string>
     <string name="deadline_interval">%1$s - %2$s</string>
 
+    <!--order -->
+    <string name="order_header">№%1$d из %2$s %3$s </string>
+    <string name="currency_format">%1$s руб</string>
+    <string name="i_picked_up_this_order">Я забрал этот заказ</string>
+    <string name="i_delivered_this_order">Я доставил этот заказ</string>
+
 </resources>

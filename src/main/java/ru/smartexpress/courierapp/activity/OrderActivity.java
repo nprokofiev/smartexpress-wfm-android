@@ -45,6 +45,11 @@ public class OrderActivity extends UpdatableActivity implements View.OnClickList
     private TextView customerName;
     private TextView orderContents;
     private TextView cost;
+    private TextView changeFor;
+    private TextView externalHumanId;
+    private TextView whoPays;
+    private TextView paymentType;
+    private TextView deliveryCost;
     private RelativeLayout footerLayout;
     DateFormat dateFormat = DateFormat.getDateTimeInstance();
 
@@ -71,8 +76,12 @@ public class OrderActivity extends UpdatableActivity implements View.OnClickList
         orderContents = (TextView)findViewById(R.id.orderContents);
         cost = (TextView)findViewById(R.id.orderCost);
         footerLayout = (RelativeLayout)findViewById(R.id.orderTrackingFooter);
+        changeFor = (TextView)findViewById(R.id.changeFor);
+        externalHumanId = (TextView)findViewById(R.id.externalHumanId);
+        whoPays = (TextView)findViewById(R.id.whoPaysForDelivery);
+        paymentType = (TextView)findViewById(R.id.paymentType);
+        deliveryCost = (TextView)findViewById(R.id.deliveryCost);
         orderDAO = new OrderDAO(this);
-
     }
 
     @Override
@@ -112,9 +121,12 @@ public class OrderActivity extends UpdatableActivity implements View.OnClickList
         partnerName.setText(OrderHelper.getNamePhone(orderDTO.getPartnerName(), orderDTO.getPartnerPhone()));
         customerName.setText(OrderHelper.getNamePhone(orderDTO.getCustomerName(), orderDTO.getCustomerPhone()));
         orderContents.setText(orderDTO.getOrder());
-        cost.setText(""+orderDTO.getCost()+" руб");
-
-
+        cost.setText(OrderHelper.getCurrency(orderDTO.getCost()));
+        changeFor.setText(orderDTO.getChangeFor());
+        externalHumanId.setText(orderDTO.getExternalHumanId());
+        whoPays.setText(orderDTO.getWhoPays());
+        paymentType.setText(orderDTO.getPaymentType());
+        deliveryCost.setText(OrderHelper.getCurrency(orderDTO.getDeliveryCost()));
     }
 
 
@@ -130,12 +142,12 @@ public class OrderActivity extends UpdatableActivity implements View.OnClickList
 
     private void setUIStatus(String status){
         if(OrderTaskStatus.CONFIRMED.name().equals(status)){
-            accept.setText("Я забрал этот заказ");
+            accept.setText(getString(R.string.i_picked_up_this_order));
             accept.setVisibility(View.VISIBLE);
             footerLayout.setVisibility(View.VISIBLE);
         }
         else if(OrderTaskStatus.PICKED_UP.name().equals(status)){
-            accept.setText("Я доставил этот заказ");
+            accept.setText(getString(R.string.i_delivered_this_order));
             accept.setVisibility(View.VISIBLE);
             footerLayout.setVisibility(View.VISIBLE);
 

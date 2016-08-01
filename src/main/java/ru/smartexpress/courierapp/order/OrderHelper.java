@@ -10,6 +10,7 @@ import ru.smartexpress.courierapp.SeApplication;
 import ru.smartexpress.courierapp.activity.MainActivity;
 
 import java.text.DateFormat;
+import java.text.DecimalFormat;
 import java.util.Date;
 
 /**
@@ -19,6 +20,9 @@ import java.util.Date;
  * @date 14.03.15 9:12
  */
 public class OrderHelper {
+
+    public static final DecimalFormat CURRENCY_FORMAT = new DecimalFormat("0.00");
+
     public static String getShortDescription(OrderDTO orderDTO){
         return String.format("№%d из %s, %s на %s до %tR", orderDTO.getId(), orderDTO.getPartnerName(), orderDTO.getSourceAddress().getFirstLine(), orderDTO.getDestinationAddress().getFirstLine(), new Date(orderDTO.getDeadline()));
     }
@@ -36,8 +40,13 @@ public class OrderHelper {
             time = context.getString(R.string.deadline_interval, getTime(deadlineFrom, context), deadline);
         }
 
-        return   String.format("№%d из %s %s ", orderDTO.getId(), orderDTO.getPartnerName(),  time);
+        return   context.getString(R.string.order_header, orderDTO.getId(), orderDTO.getPartnerName(),  time);
 
+    }
+
+    public static String getCurrency(Double currency){
+        Context context = SeApplication.app().getApplicationContext();
+        return context.getString(R.string.currency_format, CURRENCY_FORMAT.format(currency));
     }
 
     public static String getFullAddress(AddressDTO addressDTO){

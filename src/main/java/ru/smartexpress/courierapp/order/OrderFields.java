@@ -27,5 +27,10 @@ public interface OrderFields {
     String PARTNER_PHONE = "partnerPhone";
     String CUSTOMER_PHONE = "customerPhone";
     String COST = "cost";
+    String CHANGE_FOR = "changeFor";
+    String EXTERNAL_HUMAN_ID = "externalHumanId";
+    String WHO_PAYS = "whoPays";
+    String PAYMENT_TYPE = "paymentType";
+    String DELIVERY_COST = "deliveryCost";
 
 }

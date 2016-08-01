@@ -54,7 +54,6 @@
                     android:text="Куда везти:"
                     android:paddingTop="10dp"
                     android:id="@+id/destinationAddressLabel"
-
                     android:textStyle="bold"/>
                 <TextView
                     android:layout_width="match_parent"
@@ -89,6 +88,20 @@
                     android:id="@+id/partnerName"
                     />
 
+            <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Номер заказа во внешней системе:"
+                    android:paddingTop="10dp"
+                    android:id="@+id/externalHumanIdLabel"
+                    android:textStyle="bold"/>
+            <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="МУ-12-12376"
+                    android:id="@+id/externalHumanId"
+                    />
+
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -115,6 +128,63 @@
                     android:text="100 руб"
                     android:id="@+id/orderCost"
                     />
+            <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Тип платежа:"
+                    android:paddingTop="10dp"
+                    android:id="@+id/paymentTypeLabel"
+                    android:textStyle="bold"/>
+            <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Наличные"
+                    android:id="@+id/paymentType"
+                    />
+
+            <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Кто платит курьеру за доставку:"
+                    android:paddingTop="10dp"
+                    android:id="@+id/whoPaysForDeliveryLabel"
+                    android:textStyle="bold"/>
+            <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Клиент"
+                    android:id="@+id/whoPaysForDelivery"
+                    />
+
+            <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Стоимость доставки:"
+                    android:paddingTop="10dp"
+                    android:id="@+id/deliveryCostLabel"
+                    android:textStyle="bold"/>
+            <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="300 руб"
+                    android:id="@+id/deliveryCost"
+                    />
+
+            <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Сдача с:"
+                    android:paddingTop="10dp"
+                    android:id="@+id/changeForLabel"
+                    android:textStyle="bold"/>
+            <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="5000 руб"
+                    android:id="@+id/changeFor"
+                    />
+
+
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"

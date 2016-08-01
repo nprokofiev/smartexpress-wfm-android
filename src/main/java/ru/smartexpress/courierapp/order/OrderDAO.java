@@ -143,6 +143,13 @@ public class OrderDAO {
         orderDTO.setPartnerName(cursor.getString(cursor.getColumnIndex(OrderFields.PARTNER_NAME)));
         orderDTO.setPartnerPhone(cursor.getString(cursor.getColumnIndex(OrderFields.PARTNER_PHONE)));
         orderDTO.setCost(cursor.getDouble(cursor.getColumnIndex(OrderFields.COST)));
+
+        orderDTO.setChangeFor(cursor.getString(cursor.getColumnIndex(OrderFields.CHANGE_FOR)));
+        orderDTO.setExternalHumanId(cursor.getString(cursor.getColumnIndex(OrderFields.EXTERNAL_HUMAN_ID)));
+        orderDTO.setWhoPays(cursor.getString(cursor.getColumnIndex(OrderFields.WHO_PAYS)));
+        orderDTO.setPaymentType(cursor.getString(cursor.getColumnIndex(OrderFields.PAYMENT_TYPE)));
+        orderDTO.setDeliveryCost(cursor.getDouble(cursor.getColumnIndex(OrderFields.DELIVERY_COST)));
+
         return orderDTO;
     }
 
@@ -174,6 +181,13 @@ public class OrderDAO {
         cv.put(OrderFields.PARTNER_NAME, orderDTO.getPartnerName());
         cv.put(OrderFields.PARTNER_PHONE, orderDTO.getPartnerPhone());
         cv.put(OrderFields.COST, orderDTO.getCost());
+
+        cv.put(OrderFields.CHANGE_FOR, orderDTO.getChangeFor());
+        cv.put(OrderFields.EXTERNAL_HUMAN_ID, orderDTO.getExternalHumanId());
+        cv.put(OrderFields.WHO_PAYS, orderDTO.getWhoPays());
+        cv.put(OrderFields.PAYMENT_TYPE, orderDTO.getPaymentType());
+        cv.put(OrderFields.DELIVERY_COST, orderDTO.getDeliveryCost());
+
         return cv;
     }
 }

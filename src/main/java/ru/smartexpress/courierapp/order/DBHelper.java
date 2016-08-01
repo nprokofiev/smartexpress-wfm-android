@@ -12,7 +12,7 @@ import android.database.sqlite.SQLiteOpenHelper;
  * @date 13.03.15 7:39
  */
 public class DBHelper extends SQLiteOpenHelper {
-    private static final int DATABASE_VERSION = 1;
+    private static final int DATABASE_VERSION = 2;
     private static final String DATABASE_NAME = "orders";
     private static final String TABLE_CREATE =
             "CREATE TABLE "+OrderFields.TABLE_NAME+" (" +
@@ -36,8 +36,13 @@ public class DBHelper extends SQLiteOpenHelper {
                     OrderFields.PARTNER_PHONE + " TEXT, " +
                     OrderFields.CUSTOMER_PHONE + " TEXT, " +
                     OrderFields.COST + " REAL, " +
-                    OrderFields.PICKUP_DEADLINE + " INTEGER " +
+                    OrderFields.PICKUP_DEADLINE + " INTEGER, " +
 
+                    OrderFields.CHANGE_FOR + " TEXT, " +
+                    OrderFields.EXTERNAL_HUMAN_ID + " TEXT, " +
+                    OrderFields.WHO_PAYS + " TEXT, " +
+                    OrderFields.PAYMENT_TYPE + " TEXT, " +
+                    OrderFields.DELIVERY_COST + " REAL " +
                     ");";
     private static final String DROP_TABLE = "DROP TABLE "+OrderFields.TABLE_NAME+";";
 

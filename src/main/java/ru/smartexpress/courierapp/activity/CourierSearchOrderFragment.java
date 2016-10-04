@@ -39,8 +39,8 @@ public class CourierSearchOrderFragment extends AbstractOrderListActivity {
     }
 
     @Override
-    public String getTitle() {
-        return "Предлагаемые";
+    public int getTitle() {
+        return R.string.courier_search_orders;
     }
 
 

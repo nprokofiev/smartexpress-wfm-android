@@ -1,0 +1,35 @@
+{
+  "project_info": {
+    "project_number": "282638509466",
+    "project_id": "smartexpress-prod"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:282638509466:android:9d0e71ff2195b29b",
+        "android_client_info": {
+          "package_name": "ru.smartexpress.courierapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBIhtcdx6MFc2LyajOvxJg-hCYRRRqBnTY"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 1
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

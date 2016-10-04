@@ -34,7 +34,7 @@ public class ActiveOrdersFragment extends AbstractOrderListActivity {
     }
 
     @Override
-    public String getTitle() {
-        return "Активные заказы";
+    public int getTitle() {
+        return R.string.active_orders;
     }
 }

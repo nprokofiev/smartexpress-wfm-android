@@ -131,6 +131,7 @@ public class LocationService extends Service implements GoogleApiClient.Connecti
         }
         if (location == null)
             return;
+
         Logger.info( "got location lat:" + location.getLatitude() + " lot:" + location.getLongitude());
         LocationChangedRequest request = new LocationChangedRequest(new CourierLocation(location.getLatitude(), location.getLongitude()));
         spiceManager.execute(request, new RequestListener<HeartBeatDTO>() {
@@ -275,13 +276,7 @@ public class LocationService extends Service implements GoogleApiClient.Connecti
         mLocationRequest.setFastestInterval(FASTEST_UPDATE_INTERVAL);
         mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
+            stopSelf();
             return;
         }
         LocationServices.FusedLocationApi.requestLocationUpdates(

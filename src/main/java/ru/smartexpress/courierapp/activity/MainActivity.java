@@ -1,5 +1,6 @@
 package ru.smartexpress.courierapp.activity;
 
+import android.Manifest;
 import android.annotation.TargetApi;
 import android.content.*;
 import android.content.pm.PackageInfo;
@@ -8,19 +9,17 @@ import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.ViewPager;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.*;
-import android.widget.ImageView;
-import android.widget.TextView;
 import com.octo.android.robospice.SpiceManager;
 import ru.smartexpress.common.status.CourierStatus;
 import ru.smartexpress.courierapp.BuildConfig;
@@ -30,9 +29,6 @@ import ru.smartexpress.courierapp.core.SeUser;
 import ru.smartexpress.courierapp.core.SmartExpress;
 import ru.smartexpress.courierapp.service.JsonSpiceService;
 import ru.smartexpress.courierapp.service.LocationService;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * courier-android
@@ -56,23 +52,23 @@ public class MainActivity extends AppCompatActivity {
      * time.
      */
 
-    private TabLayout mTabLayout;
 
 
 
-
+    private LocationService locationService;
 
     private Menu menu;
 
 
     private SpiceManager spiceManager = new SpiceManager(JsonSpiceService.class);
 
-    private LocationService locationService;
+    private SwipeRefreshLayout swipeRefreshLayout;
 
     private boolean mIsBound;
 
     public static final String TAB_INDEX = "tabIndex";
     public static final String UPDATE_CONTENT_ACTION = "updateContentAction";
+    public static final int GPS_PERMISSION_REQUEST = 0;
     private BroadcastReceiver updateReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -93,9 +89,6 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        /*if(true){
-            throw new RuntimeException("TEST FAILURE");
-        }*/
 
         if(updateReceiver!=null){
             LocalBroadcastManager broadcastManager = LocalBroadcastManager.getInstance(this);
@@ -112,26 +105,14 @@ public class MainActivity extends AppCompatActivity {
 
 
         setContentView(R.layout.main_view);
-
         // Setup the viewPager
-        ViewPager viewPager = (ViewPager) findViewById(R.id.pager);
-        mAppSectionsPagerAdapter = new AppSectionsPagerAdapter(getSupportFragmentManager());
+
+        mAppSectionsPagerAdapter = new AppSectionsPagerAdapter(this);
         mAppSectionsPagerAdapter.add(new CourierSearchOrderFragment());
         mAppSectionsPagerAdapter.add(new ActiveOrdersFragment());
         mAppSectionsPagerAdapter.add(new HistoryOrdersFragment());
+        mAppSectionsPagerAdapter.init();
 
-        viewPager.setAdapter(mAppSectionsPagerAdapter);
-
-        mTabLayout = (TabLayout) findViewById(R.id.tab_layout);
-        mTabLayout.setupWithViewPager(viewPager);
-
-        for (int i = 0; i < mTabLayout.getTabCount(); i++) {
-            Logger.info("iterating over item#"+i);
-            TabLayout.Tab tab = mTabLayout.getTabAt(i);
-            tab.setCustomView(mAppSectionsPagerAdapter.getTabView(i));
-        }
-
-        mTabLayout.getTabAt(0).getCustomView().setSelected(true);
 
         doBindService();
 
@@ -151,11 +132,9 @@ public class MainActivity extends AppCompatActivity {
         super.onNewIntent(intent);
         int tabIndex = intent.getIntExtra(TAB_INDEX, 0);
         Log.i(getClass().getName(), "tabIndex from intent:"+tabIndex);
-        int pos = mTabLayout.getSelectedTabPosition();
-        mTabLayout.getTabAt(pos).getCustomView().setSelected(false);
-        mTabLayout.getTabAt(tabIndex).getCustomView().setSelected(true);
-        ViewPager viewPager = (ViewPager) findViewById(R.id.pager);
-        viewPager.setCurrentItem(tabIndex);
+
+        if(tabIndex==2)
+            mAppSectionsPagerAdapter.getFragments().get(2).forceDataRefresh();
 
     }
 
@@ -177,51 +156,7 @@ public class MainActivity extends AppCompatActivity {
             AuthHelper.forceLogout(this);*/
     }
 
-    /**
-     * A {@link FragmentPagerAdapter} that returns a fragment corresponding to one of the primary
-     * sections of the app.
-     */
-    public class AppSectionsPagerAdapter extends FragmentPagerAdapter {
-        private List<MainActivityFragment> fragments = new ArrayList<MainActivityFragment>();
-        public AppSectionsPagerAdapter(FragmentManager fm) {
-            super(fm);
-        }
 
-        @Override
-        public Fragment getItem(int i) {
-            return fragments.get(i).getFragment();
-        }
-
-        @Override
-        public int getCount() {
-            return fragments.size();
-        }
-
-        public void update(){
-            for (MainActivityFragment fragment : fragments)
-                fragment.update();
-        }
-
-        @Override
-        public CharSequence getPageTitle(int position) {
-            return fragments.get(position).getTitle();
-        }
-
-        public View getTabView(int position) {
-            View view = LayoutInflater.from(MainActivity.this).inflate(R.layout.custom_tab, null);
-            TextView title = (TextView) view.findViewById(R.id.title);
-            title.setText(fragments.get(position).getTitle());
-            ImageView icon = (ImageView) view.findViewById(R.id.icon);
-            icon.setImageResource(fragments.get(position).getImageResource());
-            return view;
-        }
-
-        public void add(MainActivityFragment fragment){
-
-
-            fragments.add(fragment);
-        }
-    }
 
     @Override
     protected void onDestroy() {
@@ -257,6 +192,9 @@ public class MainActivity extends AppCompatActivity {
             case R.id.about:
                 showAboutDialog();
                 return true;
+            case R.id.finance:
+                openFinance();
+                return true;
             case R.id.statusFree:
                 makeMeOnline();
                 return true;
@@ -269,7 +207,11 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-
+    private void openFinance(){
+        Intent intent = new Intent();
+        intent.setClass(this, AccountActivity.class);
+        startActivity(intent);
+    }
 
     private void checkUserStatus(){
         SeUser user = SeUser.current();
@@ -314,24 +256,52 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void checkGps() {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+
+            String[] permissions = {Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION};
+            ActivityCompat.requestPermissions(this, permissions, GPS_PERMISSION_REQUEST);
+            return;
+        }
         final LocationManager manager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         if (!manager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
             buildAlertMessageNoGps();
         }
     }
 
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        switch (requestCode){
+        case GPS_PERMISSION_REQUEST: {
+            // If request is cancelled, the result arrays are empty.
+            if (grantResults.length > 0
+                    && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                SmartExpress.checkServices();
+
+            } else {
+
+                logout();
+            }
+            return;
+        }
+
+
+    }
+    }
+
     private void buildAlertMessageNoGps() {
         final AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setMessage("Your GPS seems to be disabled, do you want to enable it?")
+        builder.setMessage(getString(R.string.gps_disabled_message))
                 .setCancelable(false)
-                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                .setPositiveButton(getString(R.string.enable), new DialogInterface.OnClickListener() {
                     public void onClick(@SuppressWarnings("unused") final DialogInterface dialog, @SuppressWarnings("unused") final int id) {
                         startActivity(new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS));
                     }
                 })
-                .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                .setNegativeButton(getString(R.string.exit), new DialogInterface.OnClickListener() {
                     public void onClick(final DialogInterface dialog, @SuppressWarnings("unused") final int id) {
                         dialog.cancel();
+                        logout();
                     }
                 });
         final AlertDialog alert = builder.create();

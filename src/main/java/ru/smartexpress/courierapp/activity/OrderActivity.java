@@ -177,6 +177,7 @@ public class OrderActivity extends UpdatableActivity implements View.OnClickList
                     Intent intent = new Intent(OrderActivity.this, MainActivity.class);
                     intent.putExtra(MainActivity.TAB_INDEX, 1);
                     startActivity(intent);
+                    OrderHelper.updateContent(getBaseContext());
                     Toast.makeText(SeApplication.app(), getString(R.string.updated_ok), Toast.LENGTH_LONG);
                     finish();
 
@@ -198,9 +199,10 @@ public class OrderActivity extends UpdatableActivity implements View.OnClickList
                     accept.setEnabled(true);
                     orderDAO.deleteOrder(orderDTO.getId());
                     Intent intent = new Intent(OrderActivity.this, MainActivity.class);
-                    intent.putExtra(MainActivity.TAB_INDEX, 1);
+                    intent.putExtra(MainActivity.TAB_INDEX, 2);
                     startActivity(intent);
                     Toast.makeText(SeApplication.app(), getString(R.string.done_ok), Toast.LENGTH_LONG);
+                    OrderHelper.updateContent(getBaseContext());
                     finish();
                 }
 

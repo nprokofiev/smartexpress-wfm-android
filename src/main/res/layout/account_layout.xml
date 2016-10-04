@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--<ImageButton
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:src="@drawable/ic_overflow_holo_dark"
+    android:contentDescription="@string/descr_overflow_button"
+    android:onClick="showPopup" />-->
+
+
+
+<android.support.v4.widget.SwipeRefreshLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/swipeRefreshMain"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                  xmlns:app="http://schemas.android.com/apk/res-auto"
+                  android:layout_width="match_parent"
+                  android:layout_height="match_parent"
+                  android:orientation="vertical">
+
+        <TableLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+            <TableRow
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginLeft="10dp">
+
+                <TextView
+                        android:id="@+id/accountBalanceText"
+                        android:layout_width="80dp"
+                        android:layout_height="24dp"
+                        android:layout_gravity="center_vertical"
+
+                        android:text="Баланс:"
+
+                        />
+
+                <TextView
+                        android:id="@+id/accountBalance"
+                        android:layout_width="80dp"
+                        android:layout_height="24dp"
+                        android:layout_gravity="center_vertical"
+                        android:layout_margin="10dp"
+                        android:textColor="#008000"
+                        android:textStyle="bold"
+                        />
+            </TableRow>
+        </TableLayout>
+
+
+        <android.support.v4.view.ViewPager xmlns:android="http://schemas.android.com/apk/res/android"
+                                           android:id="@+id/pager"
+                                           android:layout_width="match_parent"
+                                           android:layout_height="0dp"
+                                           android:layout_weight="1"
+                />
+
+        <android.support.design.widget.TabLayout
+                android:id="@+id/tab_layout"
+                style="@style/AppTabLayout"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:background="?attr/colorPrimary"
+                />
+    </LinearLayout>
+</android.support.v4.widget.SwipeRefreshLayout>
+        <!--
+        </LinearLayout>-->

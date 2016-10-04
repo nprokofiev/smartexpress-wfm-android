@@ -41,5 +41,15 @@
     <string name="currency_format">%1$s руб</string>
     <string name="i_picked_up_this_order">Я забрал этот заказ</string>
     <string name="i_delivered_this_order">Я доставил этот заказ</string>
+    <string name="gps_disabled_message">Работа в приложении невозможна без GPS.</string>
+    <string name="enable">Включить</string>
+    <string name="exit">Выйти</string>
+    <string name="finance">Финансы</string>
+    <string name="credit_account">Кредитный</string>
+    <string name="collection_account">Инкассационный</string>
+    <string name="checking_account">Зарплатный</string>
+    <string name="finished_orders">Завершенные</string>
+    <string name="active_orders">Активные заказы</string>
+    <string name="courier_search_orders">Предлагаемые</string>
 
 </resources>

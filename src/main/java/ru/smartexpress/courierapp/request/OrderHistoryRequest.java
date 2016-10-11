@@ -11,13 +11,17 @@ import ru.smartexpress.common.dto.OrderList;
  */
 public class OrderHistoryRequest extends AbstractSpringAndroidRequest<OrderList> {
 
-    public OrderHistoryRequest() {
+    private SimplePagingLoadConfig loadConfig;
+
+    public OrderHistoryRequest(SimplePagingLoadConfig loadConfig) {
         super(OrderList.class);
+        this.loadConfig = loadConfig;
+
     }
 
     @Override
     public OrderList loadDataFromNetwork() throws Exception {
         String url = baseUrl+"/courier/getOrderHistory";
-        return getRestTemplate().postForObject(url, new SimplePagingLoadConfig(), OrderList.class);
+        return getRestTemplate().postForObject(url, loadConfig, OrderList.class);
     }
 }

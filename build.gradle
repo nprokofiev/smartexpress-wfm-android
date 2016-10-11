@@ -109,6 +109,7 @@ dependencies {
     compile 'com.fasterxml.jackson.core:jackson-databind:2.5.3'
     compile 'com.squareup.okhttp3:okhttp:3.2.0'
     compile 'ch.acra:acra:4.8.5'
+    compile 'com.googlecode.libphonenumber:libphonenumber:7.2.2'
 
     //remove me after debuging
     compile 'com.squareup.okhttp3:logging-interceptor:3.2.0'

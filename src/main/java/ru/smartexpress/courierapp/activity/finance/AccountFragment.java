@@ -3,6 +3,8 @@ package ru.smartexpress.courierapp.activity.finance;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
+import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.ListFragment;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -20,7 +22,9 @@ import ru.smartexpress.common.dto.AccountDTO;
 import ru.smartexpress.common.dto.AccountRequest;
 import ru.smartexpress.common.dto.TransactionDTO;
 import ru.smartexpress.courierapp.R;
+import ru.smartexpress.courierapp.activity.InfiniteScrollListener;
 import ru.smartexpress.courierapp.activity.SeActivityFragment;
+import ru.smartexpress.courierapp.activity.SeArrayAdapter;
 import ru.smartexpress.courierapp.core.Logger;
 import ru.smartexpress.courierapp.request.AccountRestRequest;
 import ru.smartexpress.courierapp.service.JsonSpiceService;
@@ -42,11 +46,11 @@ public abstract class AccountFragment extends ListFragment implements SeActivity
     protected SpiceManager spiceManager = new SpiceManager(JsonSpiceService.class);
     public static final DateFormat dateFormat = new SimpleDateFormat("HH:mm dd.MM.yyyy");
     public static final NumberFormat moneyFormat = NumberFormat.getCurrencyInstance();
-
+    private TransactionArrayAdapter arrayAdapter;
 
     private class TransactionArrayAdapter extends ArrayAdapter<TransactionDTO> {
-        public TransactionArrayAdapter(Context context, int resource,  List<TransactionDTO> objects) {
-            super(context, resource, objects);
+        public TransactionArrayAdapter(Context context, int resource) {
+            super(context, resource);
         }
 
         @Override
@@ -89,7 +93,25 @@ public abstract class AccountFragment extends ListFragment implements SeActivity
     }
 
     @Override
-    public abstract int getTitle();
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        getListView().setOnScrollListener(new InfiniteScrollListener(50) {
+            @Override
+            public void loadMore(int page, int totalItemsCount) {
+                Logger.info("loadMoreCalled"+totalItemsCount);
+                AccountRequest request = getLoadConfig();
+                request.getLoadConfig().setOffset(totalItemsCount);
+                spiceManager.execute(new AccountRestRequest(request), AccountFragment.this);
+            }
+        });
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        arrayAdapter = new TransactionArrayAdapter(getActivity(), R.layout.transaction_layout);
+        setListAdapter(arrayAdapter);
+    }
 
     @Override
     public Fragment getFragment() {
@@ -98,19 +120,27 @@ public abstract class AccountFragment extends ListFragment implements SeActivity
 
     @Override
     public void update() {
+        if(arrayAdapter!=null)
+            arrayAdapter.clear();
         loadData();
     }
 
     private void loadData(){
+
+        spiceManager.execute(new AccountRestRequest(getLoadConfig()), this);
+    }
+
+    private AccountRequest getLoadConfig(){
         SimplePagingLoadConfig loadConfig = new SimplePagingLoadConfig();
         SortInfo sortInfo = new SortInfo();
         sortInfo.setSortDir(SortInfo.SortDir.DESC);
         sortInfo.setSortField("dateBooked");
         loadConfig.setSortInfo(Arrays.asList(sortInfo));
+        loadConfig.setLimit(50);
         AccountRequest accountRequest = new AccountRequest();
         accountRequest.setAccountType(getAccountType());
         accountRequest.setLoadConfig(loadConfig);
-        spiceManager.execute(new AccountRestRequest(accountRequest), this);
+        return accountRequest;
     }
 
     @Override
@@ -123,9 +153,7 @@ public abstract class AccountFragment extends ListFragment implements SeActivity
     @Override
     public void onRequestSuccess(AccountDTO accountDTO) {
         setRefreshing(false);
-        TransactionArrayAdapter arrayAdapter = new TransactionArrayAdapter(getActivity(), R.layout.transaction_layout,
-                accountDTO.getTransactions().getData());
-        setListAdapter(arrayAdapter);
+        arrayAdapter.addAll(accountDTO.getTransactions().getData());
         TextView accountBalance = (TextView)getActivity().findViewById(R.id.accountBalance);
         accountBalance.setText(moneyFormat.format(accountDTO.getBalance()));
         if(accountDTO.getBalance() < 0){
@@ -136,11 +164,10 @@ public abstract class AccountFragment extends ListFragment implements SeActivity
         }
     }
 
-    @Override
-    public abstract int getImageResource();
 
     @Override
     public void forceDataRefresh() {
+        arrayAdapter.clear();
         loadData();
     }
 

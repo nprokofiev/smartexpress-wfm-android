@@ -27,6 +27,10 @@ public class SeArrayAdapter extends ArrayAdapter<OrderDTO> {
         super(context, resource, 0, objects);
     }
 
+    public SeArrayAdapter(Context context, int resource) {
+        super(context, resource);
+    }
+
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
 

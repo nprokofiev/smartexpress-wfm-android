@@ -109,11 +109,13 @@
                     android:paddingTop="10dp"
                     android:id="@+id/customerNameLabel"
                     android:textStyle="bold"/>
-                <TextView
-                    android:layout_width="match_parent"
+                <Button
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Николай"
                     android:id="@+id/customerName"
+                    android:drawablePadding="5dp"
+                    android:drawableLeft="@drawable/ic_call_black_24dp"
                     />
                 <TextView
                     android:layout_width="match_parent"

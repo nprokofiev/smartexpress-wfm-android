@@ -42,7 +42,7 @@ public class OrderActivity extends UpdatableActivity implements View.OnClickList
     private TextView pickUpDeadline;
     private TextView deadline;
     private TextView partnerName;
-    private TextView customerName;
+    private Button customerName;
     private TextView orderContents;
     private TextView cost;
     private TextView changeFor;
@@ -65,14 +65,23 @@ public class OrderActivity extends UpdatableActivity implements View.OnClickList
         setContentView(R.layout.order_tracking);
         accept = (Button)findViewById(R.id.changeOrderStatus);
         accept.setOnClickListener(this);
+
         sourceAddress = (TextView)findViewById(R.id.sourceAddress);
         sourceAddress.setMovementMethod(LinkMovementMethod.getInstance());
+
         destinationAddress = (TextView)findViewById(R.id.destinationAddress);
         destinationAddress.setMovementMethod(LinkMovementMethod.getInstance());
+
         pickUpDeadline = (TextView)findViewById(R.id.pickUpDeadline);
         deadline = (TextView)findViewById(R.id.deliveryDeadline);
         partnerName = (TextView)findViewById(R.id.partnerName);
-        customerName = (TextView)findViewById(R.id.customerName);
+        customerName = (Button)findViewById(R.id.customerName);
+        customerName.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialNumber(orderDTO.getCustomerPhone());
+            }
+        });
         orderContents = (TextView)findViewById(R.id.orderContents);
         cost = (TextView)findViewById(R.id.orderCost);
         footerLayout = (RelativeLayout)findViewById(R.id.orderTrackingFooter);
@@ -119,7 +128,10 @@ public class OrderActivity extends UpdatableActivity implements View.OnClickList
         pickUpDeadline.setText(dateFormat.format(new Date(orderDTO.getPickUpDeadline())));
         deadline.setText(dateFormat.format(new Date(orderDTO.getDeadline())));
         partnerName.setText(OrderHelper.getNamePhone(orderDTO.getPartnerName(), orderDTO.getPartnerPhone()));
+
         customerName.setText(OrderHelper.getNamePhone(orderDTO.getCustomerName(), orderDTO.getCustomerPhone()));
+
+
         orderContents.setText(orderDTO.getOrder());
         cost.setText(OrderHelper.getCurrency(orderDTO.getCost()));
         changeFor.setText(orderDTO.getChangeFor());

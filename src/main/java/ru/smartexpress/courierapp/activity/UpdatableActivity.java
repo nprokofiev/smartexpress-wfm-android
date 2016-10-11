@@ -87,6 +87,7 @@ public abstract class UpdatableActivity extends Activity {
             formattedNumber = phoneNumberUtil.format(phoneNumber, PhoneNumberUtil.PhoneNumberFormat.RFC3966);
         } catch (Exception e) {
             Logger.info("error parsing phone"+number);
+            return;
         }
         if(formattedNumber==null)
             formattedNumber = number;

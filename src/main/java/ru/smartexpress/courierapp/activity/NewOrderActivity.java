@@ -8,12 +8,14 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 import com.octo.android.robospice.SpiceManager;
 import com.octo.android.robospice.persistence.exception.SpiceException;
 import com.octo.android.robospice.request.listener.RequestListener;
 import ru.smartexpress.common.status.OrderTaskStatus;
 import ru.smartexpress.common.dto.OrderDTO;
 import ru.smartexpress.courierapp.R;
+import ru.smartexpress.courierapp.SeApplication;
 import ru.smartexpress.courierapp.core.SeUser;
 import ru.smartexpress.courierapp.order.OrderDAO;
 import ru.smartexpress.courierapp.order.OrderHelper;
@@ -179,6 +181,8 @@ public class NewOrderActivity extends UpdatableActivity {
                Intent intent = new Intent(NewOrderActivity.this, MainActivity.class);
                intent.putExtra(MainActivity.TAB_INDEX, 1);
                startActivity(intent);
+               OrderHelper.updateContent(getBaseContext());
+               Toast.makeText(SeApplication.app(), getString(R.string.updated_ok), Toast.LENGTH_LONG);
 
                finish();
            }

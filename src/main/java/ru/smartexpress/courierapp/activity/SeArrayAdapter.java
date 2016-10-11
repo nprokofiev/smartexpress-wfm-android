@@ -51,6 +51,10 @@ public class SeArrayAdapter extends ArrayAdapter<OrderDTO> {
 
             if(OrderTaskStatus.PICKED_UP.toString().equals(p.getStatus()))
                 imageView.setImageResource(R.drawable.ic_local_shipping_black_18dp);
+            else if(OrderTaskStatus.CLOSED.toString().equals(p.getStatus()))
+                imageView.setImageResource(R.drawable.ic_account_balance_wallet_black_18dp);
+            else if(OrderTaskStatus.DONE.toString().equals(p.getStatus()))
+                imageView.setImageResource(R.drawable.ic_schedule_black_18dp);
             else
                 imageView.setImageResource(R.drawable.ic_place_black_18dp);
             if (address != null) {

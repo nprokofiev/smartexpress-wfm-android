@@ -4,11 +4,18 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import ru.smartexpress.common.dto.AddressDTO;
+import ru.smartexpress.common.dto.PaymentDeptDTO;
 import ru.smartexpress.common.status.OrderTaskStatus;
 import ru.smartexpress.common.dto.OrderDTO;
 import ru.smartexpress.common.dto.OrderList;
+import ru.smartexpress.courierapp.core.Logger;
 
+import java.io.IOException;
 import java.util.List;
 
 /**
@@ -19,6 +26,14 @@ import java.util.List;
  */
 public class OrderDAO {
     private DBHelper dbHelper;
+
+    private ObjectMapper mapper = new ObjectMapper();
+
+    {
+
+            mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+
+    }
 
     private static final String whereOrderId = OrderFields.ID +" = ?";
 
@@ -142,13 +157,21 @@ public class OrderDAO {
         orderDTO.setCustomerPhone(cursor.getString(cursor.getColumnIndex(OrderFields.CUSTOMER_PHONE)));
         orderDTO.setPartnerName(cursor.getString(cursor.getColumnIndex(OrderFields.PARTNER_NAME)));
         orderDTO.setPartnerPhone(cursor.getString(cursor.getColumnIndex(OrderFields.PARTNER_PHONE)));
-        orderDTO.setCost(cursor.getDouble(cursor.getColumnIndex(OrderFields.COST)));
+        orderDTO.setProfit(cursor.getDouble(cursor.getColumnIndex(OrderFields.PROFIT)));
 
         orderDTO.setChangeFor(cursor.getString(cursor.getColumnIndex(OrderFields.CHANGE_FOR)));
         orderDTO.setExternalHumanId(cursor.getString(cursor.getColumnIndex(OrderFields.EXTERNAL_HUMAN_ID)));
-        orderDTO.setWhoPays(cursor.getString(cursor.getColumnIndex(OrderFields.WHO_PAYS)));
-        orderDTO.setPaymentType(cursor.getString(cursor.getColumnIndex(OrderFields.PAYMENT_TYPE)));
-        orderDTO.setDeliveryCost(cursor.getDouble(cursor.getColumnIndex(OrderFields.DELIVERY_COST)));
+        orderDTO.setBuyoutSum(cursor.getDouble(cursor.getColumnIndex(OrderFields.BUYOUT_SUM)));
+
+        String paymentDebsJson = cursor.getString(cursor.getColumnIndex(OrderFields.PAYMENT_DEBS));
+        PaymentDeptDTO[] paymentDeptDTOs = null;
+        try {
+            paymentDeptDTOs = mapper.readValue(paymentDebsJson, PaymentDeptDTO[].class);
+        } catch (IOException e) {
+            Logger.error(e, "failed to deserialize");
+            paymentDeptDTOs = new PaymentDeptDTO[]{};
+        }
+        orderDTO.setCollections(paymentDeptDTOs);
 
         return orderDTO;
     }
@@ -180,13 +203,18 @@ public class OrderDAO {
         cv.put(OrderFields.CUSTOMER_PHONE, orderDTO.getCustomerPhone());
         cv.put(OrderFields.PARTNER_NAME, orderDTO.getPartnerName());
         cv.put(OrderFields.PARTNER_PHONE, orderDTO.getPartnerPhone());
-        cv.put(OrderFields.COST, orderDTO.getCost());
+        cv.put(OrderFields.PROFIT, orderDTO.getProfit());
+        cv.put(OrderFields.BUYOUT_SUM, orderDTO.getBuyoutSum());
 
         cv.put(OrderFields.CHANGE_FOR, orderDTO.getChangeFor());
         cv.put(OrderFields.EXTERNAL_HUMAN_ID, orderDTO.getExternalHumanId());
-        cv.put(OrderFields.WHO_PAYS, orderDTO.getWhoPays());
-        cv.put(OrderFields.PAYMENT_TYPE, orderDTO.getPaymentType());
-        cv.put(OrderFields.DELIVERY_COST, orderDTO.getDeliveryCost());
+
+        try {
+            String paymentDepts = mapper.writeValueAsString(orderDTO.getCollections());
+            cv.put(OrderFields.PAYMENT_DEBS, paymentDepts);
+        } catch (JsonProcessingException e) {
+            Logger.error(e, "error processing json");
+        }
 
         return cv;
     }

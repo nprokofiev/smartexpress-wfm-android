@@ -45,8 +45,8 @@
     <string name="enable">Включить</string>
     <string name="exit">Выйти</string>
     <string name="finance">Финансы</string>
-    <string name="credit_account">Кредитный</string>
-    <string name="collection_account">Инкассационный</string>
+    <string name="credit_account">Мат. ценности</string>
+    <string name="collection_account">Задолжность</string>
     <string name="checking_account">Зарплатный</string>
     <string name="finished_orders">Завершенные</string>
     <string name="active_orders">Активные заказы</string>

@@ -5,15 +5,17 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.LayoutRes;
+import android.support.annotation.NonNull;
 import android.text.method.LinkMovementMethod;
+import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.Button;
-import android.widget.RelativeLayout;
-import android.widget.TextView;
-import android.widget.Toast;
+import android.view.ViewGroup;
+import android.widget.*;
 import com.octo.android.robospice.SpiceManager;
 import com.octo.android.robospice.persistence.exception.SpiceException;
 import com.octo.android.robospice.request.springandroid.SpringAndroidSpiceRequest;
+import ru.smartexpress.common.dto.PaymentDeptDTO;
 import ru.smartexpress.common.status.OrderTaskStatus;
 import ru.smartexpress.common.dto.OrderDTO;
 import ru.smartexpress.courierapp.R;
@@ -26,7 +28,11 @@ import ru.smartexpress.courierapp.request.SimpleRequestListener;
 import ru.smartexpress.courierapp.service.JsonSpiceService;
 
 import java.text.DateFormat;
+import java.text.NumberFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 
 /**
  * courier-android
@@ -44,20 +50,68 @@ public class OrderActivity extends UpdatableActivity implements View.OnClickList
     private TextView partnerName;
     private Button customerName;
     private TextView orderContents;
-    private TextView cost;
+    private TextView profit;
     private TextView changeFor;
     private TextView externalHumanId;
-    private TextView whoPays;
-    private TextView paymentType;
-    private TextView deliveryCost;
-    private RelativeLayout footerLayout;
-    DateFormat dateFormat = DateFormat.getDateTimeInstance();
 
+    private RelativeLayout footerLayout;
+    private ListView customerCollections;
+    private TextView buyoutSum;
+
+    private PaymentDebtAdapter paymentDebtAdapter;
+
+    DateFormat dateFormat = DateFormat.getDateTimeInstance();
+    public static final NumberFormat moneyFormat = NumberFormat.getCurrencyInstance();
     SpiceManager spiceManager = new SpiceManager(JsonSpiceService.class);
     public static final String ORDER_DTO= "orderDTO";
     public static final String ORDER_ID = "orderId";
     private OrderDAO orderDAO;
 
+
+    class PaymentDebtAdapter extends ArrayAdapter<PaymentDeptDTO> {
+
+        public PaymentDebtAdapter(Context context, @LayoutRes int resource, @NonNull List<PaymentDeptDTO> objects) {
+            super(context, resource, 0, objects);
+        }
+
+        public PaymentDebtAdapter(Context context, @LayoutRes int resource) {
+            super(context, resource);
+        }
+
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+
+            View v = convertView;
+
+            if (v == null) {
+                LayoutInflater vi;
+                vi = LayoutInflater.from(getContext());
+                v = vi.inflate(R.layout.transaction_layout, null);
+            }
+
+            PaymentDeptDTO p = getItem(position);
+
+            if (p != null) {
+                TextView bookedDate = (TextView) v.findViewById(R.id.transactionBookedDate);
+                TextView sum = (TextView) v.findViewById(R.id.transactionSum);
+                TextView details = (TextView) v.findViewById(R.id.transactionDetails);
+
+
+                sum.setText(moneyFormat.format(p.getPaymentSum()));
+
+                bookedDate.setText(p.getLocalizedPaymentType());
+
+                details.setText(p.getPaymentDetails());
+
+            }
+
+            return v;
+
+
+        }
+
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -83,14 +137,39 @@ public class OrderActivity extends UpdatableActivity implements View.OnClickList
             }
         });
         orderContents = (TextView)findViewById(R.id.orderContents);
-        cost = (TextView)findViewById(R.id.orderCost);
+        profit = (TextView)findViewById(R.id.orderProfit);
         footerLayout = (RelativeLayout)findViewById(R.id.orderTrackingFooter);
         changeFor = (TextView)findViewById(R.id.changeFor);
         externalHumanId = (TextView)findViewById(R.id.externalHumanId);
-        whoPays = (TextView)findViewById(R.id.whoPaysForDelivery);
-        paymentType = (TextView)findViewById(R.id.paymentType);
-        deliveryCost = (TextView)findViewById(R.id.deliveryCost);
+        buyoutSum = (TextView)findViewById(R.id.orderBuyoutSum);
+
+        customerCollections = (ListView)findViewById(R.id.customerCollection);
+
         orderDAO = new OrderDAO(this);
+        paymentDebtAdapter = new PaymentDebtAdapter(this, R.layout.transaction_layout);
+        customerCollections.setAdapter(paymentDebtAdapter);
+
+    }
+
+    public static void setListViewHeightBasedOnChildren(ListView listView) {
+        ListAdapter listAdapter = listView.getAdapter();
+        if (listAdapter == null)
+            return;
+
+        int desiredWidth = View.MeasureSpec.makeMeasureSpec(listView.getWidth(), View.MeasureSpec.UNSPECIFIED);
+        int totalHeight = 0;
+        View view = null;
+        for (int i = 0; i < listAdapter.getCount(); i++) {
+            view = listAdapter.getView(i, view, listView);
+            if (i == 0)
+                view.setLayoutParams(new ViewGroup.LayoutParams(desiredWidth, ViewGroup.LayoutParams.WRAP_CONTENT));
+
+            view.measure(desiredWidth, View.MeasureSpec.UNSPECIFIED);
+            totalHeight += view.getMeasuredHeight();
+        }
+        ViewGroup.LayoutParams params = listView.getLayoutParams();
+        params.height = totalHeight + (listView.getDividerHeight() * (listAdapter.getCount() - 1));
+        listView.setLayoutParams(params);
     }
 
     @Override
@@ -133,14 +212,17 @@ public class OrderActivity extends UpdatableActivity implements View.OnClickList
 
 
         orderContents.setText(orderDTO.getOrder());
-        cost.setText(OrderHelper.getCurrency(orderDTO.getCost()));
+        profit.setText(OrderHelper.getCurrency(orderDTO.getProfit()));
         changeFor.setText(orderDTO.getChangeFor());
         externalHumanId.setText(orderDTO.getExternalHumanId());
-        whoPays.setText(orderDTO.getWhoPays());
-        paymentType.setText(orderDTO.getPaymentType());
-        deliveryCost.setText(OrderHelper.getCurrency(orderDTO.getDeliveryCost()));
-    }
 
+        List<PaymentDeptDTO> customerDept = Arrays.asList(orderDTO.getCollections());
+        paymentDebtAdapter.clear();
+        paymentDebtAdapter.addAll(customerDept);
+
+        buyoutSum.setText(moneyFormat.format(orderDTO.getBuyoutSum()));
+        setListViewHeightBasedOnChildren(customerCollections);
+    }
 
 
     @Override
@@ -228,6 +310,8 @@ public class OrderActivity extends UpdatableActivity implements View.OnClickList
 
     }
 }
+
+
 
 
 

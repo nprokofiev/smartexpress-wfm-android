@@ -198,7 +198,7 @@ public class SeUser {
         });
     }
 
-    private String detectRestError(SpiceException spiceException){
+    public static String detectRestError(SpiceException spiceException){
         Logger.error(spiceException, "rest error");
         if (spiceException instanceof NetworkException) {
             NetworkException exception = (NetworkException) spiceException;

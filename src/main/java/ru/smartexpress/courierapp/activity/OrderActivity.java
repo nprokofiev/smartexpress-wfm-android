@@ -20,6 +20,7 @@ import ru.smartexpress.common.status.OrderTaskStatus;
 import ru.smartexpress.common.dto.OrderDTO;
 import ru.smartexpress.courierapp.R;
 import ru.smartexpress.courierapp.SeApplication;
+import ru.smartexpress.courierapp.activity.finance.AccountFragment;
 import ru.smartexpress.courierapp.order.OrderDAO;
 import ru.smartexpress.courierapp.order.OrderHelper;
 import ru.smartexpress.courierapp.request.DeliverOrderRequest;
@@ -29,10 +30,7 @@ import ru.smartexpress.courierapp.service.JsonSpiceService;
 
 import java.text.DateFormat;
 import java.text.NumberFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 /**
  * courier-android
@@ -61,7 +59,7 @@ public class OrderActivity extends UpdatableActivity implements View.OnClickList
     private PaymentDebtAdapter paymentDebtAdapter;
 
     DateFormat dateFormat = DateFormat.getDateTimeInstance();
-    public static final NumberFormat moneyFormat = NumberFormat.getCurrencyInstance();
+    public static final NumberFormat moneyFormat = AccountFragment.moneyFormat;
     SpiceManager spiceManager = new SpiceManager(JsonSpiceService.class);
     public static final String ORDER_DTO= "orderDTO";
     public static final String ORDER_ID = "orderId";

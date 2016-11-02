@@ -63,6 +63,21 @@ public class LoginFragment extends Fragment {
 
             }
         });
+
+        Button resetPassword = (Button) getView().findViewById(R.id.resetPasswordForm);
+        resetPassword.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                PasswordResetFragment passwordResetFragment = new PasswordResetFragment();
+                LoginActivity loginActivity = (LoginActivity)getActivity();
+                loginActivity.getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.login_fragment_container, passwordResetFragment)
+                        .addToBackStack(null)
+                        .commit();
+
+
+            }
+        });
     }
 
     private void attemptLogin() {

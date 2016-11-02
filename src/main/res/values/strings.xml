@@ -51,5 +51,10 @@
     <string name="finished_orders">Завершенные</string>
     <string name="active_orders">Активные заказы</string>
     <string name="courier_search_orders">Предлагаемые</string>
+    <string name="requestCode">Выслать код по смс</string>
+    <string name="resetPassword">Сбросить пароль</string>
+    <string name="confirmation_code">Код подтверждения</string>
+    <string name="error_requesting_password_change">Произошла ошибка</string>
+    <string name="confirmation_code_must_be_requested">Необходимо запросить код подтверждения</string>
 
 </resources>

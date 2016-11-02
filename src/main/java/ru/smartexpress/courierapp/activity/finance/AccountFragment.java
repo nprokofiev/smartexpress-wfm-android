@@ -34,6 +34,7 @@ import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * smartexpress-courier-android
@@ -45,7 +46,7 @@ public abstract class AccountFragment extends ListFragment implements SeActivity
 
     protected SpiceManager spiceManager = new SpiceManager(JsonSpiceService.class);
     public static final DateFormat dateFormat = new SimpleDateFormat("HH:mm dd.MM.yyyy");
-    public static final NumberFormat moneyFormat = NumberFormat.getCurrencyInstance();
+    public static final NumberFormat moneyFormat = NumberFormat.getCurrencyInstance(new Locale("ru", "RU"));
     private TransactionArrayAdapter arrayAdapter;
 
     private class TransactionArrayAdapter extends ArrayAdapter<TransactionDTO> {

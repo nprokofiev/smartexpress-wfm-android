@@ -4,9 +4,12 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.*;
 import android.os.Bundle;
+import android.text.InputType;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 import com.octo.android.robospice.SpiceManager;
@@ -190,24 +193,68 @@ public class NewOrderActivity extends UpdatableActivity {
     }
 
     private void onReject(){
-        setButtonEnabled(false);
-        spiceManager.execute(new RejectOrderRequest(orderId), new SimpleRequestListener(this) {
 
 
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle(R.string.reason);
+
+        final EditText input = new EditText(this);
+        input.setInputType(InputType.TYPE_CLASS_TEXT);
+        builder.setView(input);
+
+// Set up the buttons
+        builder.setNeutralButton(R.string.reject, null);
+
+
+        builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
             @Override
-            public void onRequestSuccess(Object o) {
-                setButtonEnabled(true);
-                Log.i("NewOrderActivity", "rejected ok");
-                orderDAO.deleteOrder(orderId);
-                finish();
-            }
-
-            @Override
-            public void onRequestFailure(SpiceException spiceException) {
-                setButtonEnabled(true);
-                super.onRequestFailure(spiceException);
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.cancel();
             }
         });
+
+        AlertDialog alertDialog = builder.create();
+        alertDialog.setOnShowListener(new DialogInterface.OnShowListener() {
+            @Override
+            public void onShow(final DialogInterface dialog) {
+                Button b = ((AlertDialog) dialog).getButton(AlertDialog.BUTTON_NEUTRAL);
+                b.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        setButtonEnabled(false);
+                        String  m_Text = input.getText().toString();
+                        if(TextUtils.isEmpty(m_Text)){
+                            input.setError(getString(R.string.must_not_be_empty));
+                            return;
+                        }
+                        spiceManager.execute(new RejectOrderRequest(orderId, m_Text), new SimpleRequestListener(NewOrderActivity.this) {
+
+
+                            @Override
+                            public void onRequestSuccess(Object o) {
+                                setButtonEnabled(true);
+                                Log.i("NewOrderActivity", "rejected ok");
+                                orderDAO.deleteOrder(orderId);
+                                OrderHelper.updateContent(getBaseContext());
+                                Toast.makeText(SeApplication.app(), getString(R.string.updated_ok), Toast.LENGTH_LONG);
+                                finish();
+                            }
+
+                            @Override
+                            public void onRequestFailure(SpiceException spiceException) {
+                                setButtonEnabled(true);
+                                super.onRequestFailure(spiceException);
+                            }
+                        });
+                        dialog.dismiss();
+                    }
+                });
+
+            }
+        });
+        alertDialog.show();
+
+
     }
 
     private void setButtonEnabled(boolean enabled){

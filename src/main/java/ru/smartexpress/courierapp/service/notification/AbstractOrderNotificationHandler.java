@@ -40,10 +40,6 @@ public abstract class AbstractOrderNotificationHandler implements NotificationHa
                 context.getSystemService(Context.NOTIFICATION_SERVICE);
     }
 
-    @Override
-    public void afterBestBefore(MobileMessageDTO message) {
-
-    }
 
     protected void pingNotify(String title, String text, int notificationId, Intent intent){
 

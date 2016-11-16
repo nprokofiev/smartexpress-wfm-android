@@ -31,20 +31,6 @@ public class NotificationProcessor implements RequestListener<MobileMessageList>
 
     private List<NotificationHandler> handlers = new ArrayList<NotificationHandler>();
 
-    private Timer timer = new Timer();
-
-    private class BestBeforeTimerTask extends TimerTask {
-        private MobileMessageDTO messageDTO;
-
-        private BestBeforeTimerTask(MobileMessageDTO messageDTO) {
-            this.messageDTO = messageDTO;
-        }
-
-        @Override
-        public void run() {
-            handleBestBefore(messageDTO);
-        }
-    }
 
     public NotificationProcessor(Context context) {
         this.context = context;
@@ -82,25 +68,12 @@ public class NotificationProcessor implements RequestListener<MobileMessageList>
 
 
 
-    private void handleBestBefore(MobileMessageDTO messageDTO){
-        String type = messageDTO.getType();
-        for (NotificationHandler handler : handlers) {
-            if (handler.getType().equals(type)) {
-                Logger.info("handling bestBefore for "+messageDTO.toString());
-                handler.afterBestBefore(messageDTO);
-                return;
-            }
-        }
-    }
 
     private void handleMessage(MobileMessageDTO messageDTO){
         String type = messageDTO.getType();
         for (NotificationHandler handler : handlers) {
             if (handler.getType().equals(type)) {
                 handler.handle(messageDTO);
-                Integer bestBeforeInterval = messageDTO.getBestBeforeIntervalSec();
-                if(bestBeforeInterval!=null && bestBeforeInterval > 0)
-                    timer.schedule(new BestBeforeTimerTask(messageDTO), bestBeforeInterval);
                 return;
             }
         }

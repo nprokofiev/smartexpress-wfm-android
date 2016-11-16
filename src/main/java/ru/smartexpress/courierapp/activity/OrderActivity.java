@@ -23,6 +23,7 @@ import ru.smartexpress.courierapp.SeApplication;
 import ru.smartexpress.courierapp.activity.finance.AccountFragment;
 import ru.smartexpress.courierapp.order.OrderDAO;
 import ru.smartexpress.courierapp.order.OrderHelper;
+import ru.smartexpress.courierapp.request.CourierArrivedRequest;
 import ru.smartexpress.courierapp.request.DeliverOrderRequest;
 import ru.smartexpress.courierapp.request.PickUpOrderRequest;
 import ru.smartexpress.courierapp.request.SimpleRequestListener;
@@ -233,8 +234,13 @@ public class OrderActivity extends UpdatableActivity implements View.OnClickList
     }
 
     private void setUIStatus(String status){
-        if(OrderTaskStatus.CONFIRMED.name().equals(status)){
+        if(OrderTaskStatus.COURIER_ARRIVED_FOR_PICKUP.name().equals(status)){
             accept.setText(getString(R.string.i_picked_up_this_order));
+            accept.setVisibility(View.VISIBLE);
+            footerLayout.setVisibility(View.VISIBLE);
+        }
+        else if(OrderTaskStatus.CONFIRMED.name().equals(status)){
+            accept.setText(getString(R.string.i_arrived_to_pickup_point));
             accept.setVisibility(View.VISIBLE);
             footerLayout.setVisibility(View.VISIBLE);
         }
@@ -247,7 +253,6 @@ public class OrderActivity extends UpdatableActivity implements View.OnClickList
         else{
             accept.setVisibility(View.INVISIBLE);
             footerLayout.setVisibility(View.INVISIBLE);
-
         }
     }
 
@@ -258,6 +263,32 @@ public class OrderActivity extends UpdatableActivity implements View.OnClickList
         setProgressBarIndeterminateVisibility(true);
         accept.setEnabled(false);
         if(OrderTaskStatus.CONFIRMED.name().equals(orderDTO.getStatus())){
+            request = new CourierArrivedRequest(orderDTO.getId());
+            spiceManager.execute(request, new SimpleRequestListener(this) {
+                @Override
+                public void onRequestSuccess(Object o) {
+                    accept.setEnabled(true);
+                    orderDTO.setStatus(OrderTaskStatus.COURIER_ARRIVED_FOR_PICKUP.name());
+                    setUIStatus(orderDTO.getStatus());
+                    orderDAO.updateOrderStatus(orderDTO.getId(), OrderTaskStatus.COURIER_ARRIVED_FOR_PICKUP);
+                    Intent intent = new Intent(OrderActivity.this, MainActivity.class);
+                    intent.putExtra(MainActivity.TAB_INDEX, 1);
+                    startActivity(intent);
+                    OrderHelper.updateContent(getBaseContext());
+                    Toast.makeText(SeApplication.app(), getString(R.string.updated_ok), Toast.LENGTH_LONG);
+                    finish();
+
+                }
+
+                @Override
+                public void onRequestFailure(SpiceException spiceException) {
+                    accept.setEnabled(true);
+                    super.onRequestFailure(spiceException);
+                }
+            });
+
+        }
+        else if(OrderTaskStatus.COURIER_ARRIVED_FOR_PICKUP.name().equals(orderDTO.getStatus())){
             request = new PickUpOrderRequest(orderDTO.getId());
             spiceManager.execute(request, new SimpleRequestListener(this) {
                 @Override

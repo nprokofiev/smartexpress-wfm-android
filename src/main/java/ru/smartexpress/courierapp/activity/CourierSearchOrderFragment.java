@@ -33,6 +33,13 @@ public class CourierSearchOrderFragment extends AbstractOrderListActivity {
 
     }
 
+    protected void loadData(){
+        orders = getData();
+
+        NewOrderArrayAdapter arrayAdapter = new NewOrderArrayAdapter(getActivity(), R.layout.new_order_layout, orders);
+        setListAdapter(arrayAdapter);
+    }
+
     @Override
     public int getImageResource() {
         return R.drawable.ic_add_shopping_cart_selector;

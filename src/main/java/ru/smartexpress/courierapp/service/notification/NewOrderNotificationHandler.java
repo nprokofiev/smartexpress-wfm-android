@@ -31,16 +31,6 @@ public class NewOrderNotificationHandler extends AbstractOrderNotificationHandle
         return NotificationType.NEW_ORDER;
     }
 
-    @Override
-    public void afterBestBefore(MobileMessageDTO message) {
-        Long orderId = message.getOrder().getId();
-        OrderDTO orderDTO = orderDAO.getOrderById(orderId);
-        if(OrderTaskStatus.COURIER_SEARCH.equals(orderDTO.getStatus())){
-            orderDAO.deleteOrder(orderId);
-            SystemHelper.sendUpdateUI(context);
-        }
-        checkNotification(orderDTO);
-    }
 
     @Override
     public void handle(MobileMessageDTO messageDTO) {

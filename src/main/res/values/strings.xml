@@ -39,7 +39,9 @@
     <!--order -->
     <string name="order_header">№%1$d из %2$s %3$s </string>
     <string name="currency_format">%1$s руб</string>
+    <string name="buyout">Выкуп: %1$s</string>
     <string name="i_picked_up_this_order">Я забрал этот заказ</string>
+    <string name="i_arrived_to_pickup_point">Я приехал на точку</string>
     <string name="i_delivered_this_order">Я доставил этот заказ</string>
     <string name="gps_disabled_message">Работа в приложении невозможна без GPS.</string>
     <string name="enable">Включить</string>
@@ -56,5 +58,8 @@
     <string name="confirmation_code">Код подтверждения</string>
     <string name="error_requesting_password_change">Произошла ошибка</string>
     <string name="confirmation_code_must_be_requested">Необходимо запросить код подтверждения</string>
+    <string name="reason">Причина отказа</string>
+    <string name="reject">Ок</string>
+    <string name="cancel">Отмена</string>
 
 </resources>

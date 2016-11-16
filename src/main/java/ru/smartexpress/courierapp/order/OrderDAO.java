@@ -113,8 +113,8 @@ public class OrderDAO {
     public OrderList getActiveOrders(){
         OrderList orderDTOs = new OrderList();
         SQLiteDatabase database = dbHelper.getReadableDatabase();
-        String whereStatus = OrderFields.STATUS + " IN(?, ?)";
-        String[] whereArgs = new String[]{OrderTaskStatus.CONFIRMED.name(), OrderTaskStatus.PICKED_UP.name()};
+        String whereStatus = OrderFields.STATUS + " IN(?, ?, ?)";
+        String[] whereArgs = new String[]{OrderTaskStatus.CONFIRMED.name(), OrderTaskStatus.PICKED_UP.name(), OrderTaskStatus.COURIER_ARRIVED_FOR_PICKUP.name()};
         Cursor cursor = database.query(OrderFields.TABLE_NAME, null, whereStatus, whereArgs, null, null, null);
         if(cursor.moveToFirst()){
             do{

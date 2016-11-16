@@ -12,6 +12,7 @@ import android.widget.TextView;
 import ru.smartexpress.common.dto.OrderDTO;
 import ru.smartexpress.common.status.OrderTaskStatus;
 import ru.smartexpress.courierapp.R;
+import ru.smartexpress.courierapp.activity.finance.AccountFragment;
 import ru.smartexpress.courierapp.order.OrderHelper;
 
 import java.util.List;
@@ -20,14 +21,14 @@ import java.util.List;
  * smartexpress-courier-android
  *
  * @author <a href="mailto:nprokofiev@gmail.com">Nikolay Prokofiev</a>
- * @date 21.04.16 9:33
+ * @date 15.11.16 17:50
  */
-public class SeArrayAdapter extends ArrayAdapter<OrderDTO> {
-    public SeArrayAdapter(Context context, @LayoutRes int resource, @NonNull List<OrderDTO> objects) {
+public class NewOrderArrayAdapter  extends ArrayAdapter<OrderDTO> {
+    public NewOrderArrayAdapter(Context context, @LayoutRes int resource, @NonNull List<OrderDTO> objects) {
         super(context, resource, 0, objects);
     }
 
-    public SeArrayAdapter(Context context, int resource) {
+    public NewOrderArrayAdapter(Context context, int resource) {
         super(context, resource);
     }
 
@@ -39,26 +40,16 @@ public class SeArrayAdapter extends ArrayAdapter<OrderDTO> {
         if (v == null) {
             LayoutInflater vi;
             vi = LayoutInflater.from(getContext());
-            v = vi.inflate(R.layout.order_fragment_list_item, null);
+            v = vi.inflate(R.layout.new_order_layout, null);
         }
 
         OrderDTO p = getItem(position);
 
         if (p != null) {
-            TextView address = (TextView) v.findViewById(R.id.order_address);
-            TextView headline = (TextView) v.findViewById(R.id.order_headline);
-            ImageView imageView = (ImageView) v.findViewById(R.id.order_icon);
-
-            if(OrderTaskStatus.PICKED_UP.toString().equals(p.getStatus()))
-                imageView.setImageResource(R.drawable.ic_local_shipping_black_18dp);
-            else if(OrderTaskStatus.CLOSED.toString().equals(p.getStatus()))
-                imageView.setImageResource(R.drawable.ic_account_balance_wallet_black_18dp);
-            else if(OrderTaskStatus.DONE.toString().equals(p.getStatus()))
-                imageView.setImageResource(R.drawable.ic_schedule_black_18dp);
-            else if(OrderTaskStatus.CONFIRMED.toString().equals(p.getStatus()))
-                imageView.setImageResource(R.drawable.ic_forward_24dp);
-            else
-                imageView.setImageResource(R.drawable.ic_place_black_18dp);
+            TextView address = (TextView) v.findViewById(R.id.address);
+            TextView headline = (TextView) v.findViewById(R.id.orderDetails);
+            TextView buyout = (TextView) v.findViewById(R.id.buyout);
+            TextView sum = (TextView) v.findViewById(R.id.courierProfit);
             if (address != null) {
                 address.setText(p.getDestinationAddress().getFirstLine());
             }
@@ -67,8 +58,24 @@ public class SeArrayAdapter extends ArrayAdapter<OrderDTO> {
                 headline.setText(OrderHelper.getOrderHeader(p));
             }
 
+            if(sum!=null){
+                String courierProfit = AccountFragment.moneyFormat.format(p.getProfit());
+                sum.setText(courierProfit);
+            }
+
+            if (buyout != null) {
+                if (p.getBuyoutSum() > 0.0) {
+                    buyout.setVisibility(View.VISIBLE);
+                    String sumText = AccountFragment.moneyFormat.format(p.getBuyoutSum());
+                    buyout.setText(getContext().getString(R.string.buyout, sumText));
+                } else {
+                    buyout.setVisibility(View.INVISIBLE);
+                }
+            }
         }
+
 
         return v;
     }
+
 }

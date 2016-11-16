@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="72dp">
+    <TextView
+            android:id="@+id/courierProfit"
+            android:layout_width="100dp"
+            android:layout_height="24dp"
+            android:layout_gravity="center_vertical"
+            android:layout_marginLeft="5dp"
+            android:text="+10000.23"
+            android:textColor="#008000"
+            android:textStyle="bold"
+            />
+    <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="5dp"
+            android:layout_gravity="center_vertical">
+        <TextView
+                android:id="@+id/address"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:text="12:57 12.11.2016"
+                style="@style/Base.TextAppearance.AppCompat.Subhead"/>
+
+        <TextView
+                android:id="@+id/orderDetails"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:text="very long text about how this transaction has appeared here."/>
+        <TextView
+                android:id="@+id/buyout"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:text="very long text about how this transaction has appeared here."
+                android:background="#f87575"/>
+    </LinearLayout>
+
+</LinearLayout>

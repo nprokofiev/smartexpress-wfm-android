@@ -14,6 +14,4 @@ import ru.smartexpress.common.dto.MobileMessageDTO;
 public interface NotificationHandler {
     String getType();
     void handle(MobileMessageDTO message);
-
-    void afterBestBefore(MobileMessageDTO message);
 }
